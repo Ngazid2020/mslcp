@@ -27,7 +27,8 @@ class AnalysesRelationManager extends RelationManager
                     ->required()
                     ->searchable()
                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                    ->distinct(),
+                    ->distinct()
+                    ->disabled(),
                 Forms\Components\TextInput::make('resultat')
                     ->required()
                     ->maxLength(255),

@@ -9,6 +9,7 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,10 +20,15 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
+        $userAdmin = User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@example.com',
         ]);
+
+        Role::create(['name' => 'administrateur']);
+
+        $userAdmin->assignRole('administrateur');
+
         User::factory()->create([
             'name' => 'labo1',
             'email' => 'labo1@example.com',
