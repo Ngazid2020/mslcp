@@ -1,0 +1,141 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\ElementResource\Pages;
+use App\Filament\Resources\ElementResource\RelationManagers;
+use App\Models\Element;
+use Filament\Forms;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class ElementResource extends Resource
+{
+    protected static ?string $model = Element::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-eye-dropper';
+    protected static ?string $navigationGroup = 'Eléments et paramètres';
+    protected static ?int $navigationGroupSort = 3;
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Section::make('Informations de l\'élément')->schema([
+                    Grid::make(['default' => 1, 'md' => 2, 'xl' => 3])->schema([
+                        Forms\Components\TextInput::make('nom')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('unite')
+                        ->maxLength(255)
+                        ->default(null),
+                    Select::make('category_id')
+                        ->relationship('category', 'name')
+                        ->required(),
+                    ])
+
+                ])->columns(3),
+                Section::make()->schema([
+                    Grid::make(['default' => 1, 'md' => 2, 'xl' => 4])->schema([
+                        Section::make('Homme Adulte')->schema([
+                            Forms\Components\TextInput::make('ref_inf_h')
+                                ->label('Norme inférieure')
+                                ->maxLength(255)
+                                ->default(null),
+                            Forms\Components\TextInput::make('ref_sup_h')
+                                ->label('Norme supérieure')
+                                ->maxLength(255)
+                                ->default(null),
+                        ])->columnSpan(1),
+                        Section::make('Femme Adulte')->schema([
+                            Forms\Components\TextInput::make('ref_inf_f')
+                                ->label('Norme inférieure')
+                                ->maxLength(255)
+                                ->default(null),
+                            Forms\Components\TextInput::make('ref_sup_f')
+                                ->label('Norme supérieur')
+                                ->maxLength(255)
+                                ->default(null),
+                        ])->columnSpan(1),
+                        Section::make('Enfant')->schema([
+                            Forms\Components\TextInput::make('ref_inf_enf')
+                                ->label('Norme inférieure')
+                                ->maxLength(255)
+                                ->default(null),
+                            Forms\Components\TextInput::make('ref_sup_enf')
+                                ->label('Norme supérieur')
+                                ->maxLength(255)
+                                ->default(null),
+                        ])->columnSpan(1),
+                        Section::make('Nourrisson')->schema([
+                            Forms\Components\TextInput::make('ref_inf_nour')
+                                ->label('Norme inférieure')
+                                ->maxLength(255)
+                                ->default(null),
+                            Forms\Components\TextInput::make('ref_sup_nour')
+                                ->label('Norme supérieur')
+                                ->maxLength(255)
+                                ->default(null),
+                        ])->columnSpan(1),
+                    ])
+                ])
+
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('nom')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('unite')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListElements::route('/'),
+            'create' => Pages\CreateElement::route('/create'),
+            'edit' => Pages\EditElement::route('/{record}/edit'),
+        ];
+    }
+}
