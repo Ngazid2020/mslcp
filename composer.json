@@ -8,9 +8,11 @@
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.1",
+        "eightynine/filament-excel-import": "^3.1",
         "filament/filament": "^3.3",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
+        "leandrocfe/filament-apex-charts": "^3.2",
         "simplesoftwareio/simple-qrcode": "^4.2"
     },
     "require-dev": {
