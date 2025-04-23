@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ElementResource\Pages;
 
 use App\Filament\Resources\ElementResource;
+use EightyNine\ExcelImport\ExcelImportAction;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -14,6 +15,9 @@ class ListElements extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            ExcelImportAction::make()
+            ->label('Importer depuis un fichier Excel')
+            ->color("secondary"),
         ];
     }
 }

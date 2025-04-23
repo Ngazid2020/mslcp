@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\ElementExporter;
 use App\Filament\Resources\ElementResource\Pages;
 use App\Filament\Resources\ElementResource\RelationManagers;
 use App\Models\Element;
+use Filament\Actions\Exports\Models\Export;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -12,6 +14,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -119,7 +123,15 @@ class ElementResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    ExportBulkAction::make()
+                        ->exporter(ElementExporter::class)
+                        ->label('Exporter'),
+                        
                 ]),
+            ])
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(ElementExporter::class)
             ]);
     }
 
