@@ -103,4 +103,10 @@ class BilanPolicy
     {
         return $user->checkPermissionTo('force-delete-any Bilan');
     }
+
+
+    public function download(User $user, Bilan $bilan): bool
+    {
+        return $user->checkPermissionTo('download Bilan');
+    }
 }

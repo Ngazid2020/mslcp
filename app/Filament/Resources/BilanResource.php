@@ -127,7 +127,8 @@ class BilanResource extends Resource
                     ->icon('heroicon-o-document-arrow-down')
                     ->url(fn($record) => route('pdf.bilan', $record->id))
                     ->openUrlInNewTab()
-                    ->color(Color::Emerald),
+                    ->color(Color::Emerald)
+                    ->visible(fn($record) => auth()->user()->can('download', $record)),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
