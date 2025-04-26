@@ -130,8 +130,8 @@ class ElementResource extends Resource
                 ]),
             ])
             ->headerActions([
-                ExportAction::make()
-                    ->exporter(ElementExporter::class)
+                // ExportAction::make()
+                //     ->exporter(ElementExporter::class)
             ]);
     }
 
