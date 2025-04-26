@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Element extends Model
@@ -27,12 +28,13 @@ class Element extends Model
         'category_id',
     ];
 
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 
-    public function analyses(): HasMany
+    public function bilans(): BelongsToMany
     {
-        return $this->hasMany(Analyse::class);
+        return $this->belongsToMany(Bilan::class)->using(Analyse::class);
     }
 }

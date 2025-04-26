@@ -4,9 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BilanResource\Pages;
 use App\Filament\Resources\BilanResource\RelationManagers;
+use App\Filament\Resources\ElementsResource\RelationManagers\ElementsRelationManager;
 use App\Models\Bilan;
 use App\Models\Element;
 use Filament\Forms;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
@@ -57,40 +59,35 @@ class BilanResource extends Resource
                                 TextInput::make('prenom'),
                                 Select::make('sexe')
                                     ->options([
-                                        'M' => 'Masculin',
-                                        'F' => 'Féminin'
+                                        'Masculin' => 'Masculin',
+                                        'Féminin' => 'Féminin'
                                     ]),
                                 TextInput::make('domicile'),
                                 TextInput::make('lieu_naissance'),
                                 TextInput::make('age')
                             ])
                             // ->columns(2)
-                            ->label('Patient')
-                            ->columnSpanFull(),
+                            ->label('Patient'),
+                        Select::make('prescripteur_id')
+                            ->relationship('prescripteur', 'nom')
+                            ->preload()
+                            ->searchable(),
                     ])
                     ->columns(2),
                 Section::make('Résultats des analyses')->schema([
-                    Repeater::make('Analyses')
-                        ->relationship()
-                        ->schema([
-                            Select::make('element_id')
-                                ->relationship('element', 'nom')
-                                ->preload()
-                                ->required()
-                                ->searchable()
-                                ->distinct()
-                                ->disableOptionsWhenSelectedInSiblingRepeaterItems()
-                                ->columnSpan(1),
-
-                            TextInput::make('resultat')
-                                ->label('Résultat'),
-
-                        ])
-                        ->addactionlabel('Ajouter une autre analyse')
-                        ->columnSpan(1)
-                        ->columns(2),
+                    CheckboxList::make('elements')
+                        ->columns(3)
+                        ->relationship('elements', 'id')
+                        ->options(Element::all()->pluck('nom', 'id'))
+                        ->afterStateUpdated(function (callable $set, $state) {
+                            $set('elements', $state);
+                        })
+                        ->searchable()
+                        ->label('Liste des présents')
+                        ->columnSpanFull()
+                        ->reactive(),
                 ])
-                ->hiddenOn('edit')
+                    ->hiddenOn('edit')
 
             ]);
     }
@@ -138,11 +135,11 @@ class BilanResource extends Resource
     }
 
     public static function getRelations(): array
-{
-    return [
-        RelationManagers\AnalysesRelationManager::class,
-    ];
-}
+    {
+        return [
+            ElementsRelationManager::class,
+        ];
+    }
 
     public static function getPages(): array
     {

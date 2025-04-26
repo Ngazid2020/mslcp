@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Bilan extends Model
 {
@@ -28,9 +29,11 @@ class Bilan extends Model
         return $this->belongsTo(Prescripteur::class);
     }
 
-    public function analyses()
+    public function elements(): BelongsToMany
     {
-        return $this->hasMany(Analyse::class);
-    }  
-    
+        return $this->belongsToMany(Element::class, 'analyses')
+            ->using(Analyse::class)
+            ->withPivot('resultat',)
+            ->withTimestamps();
+    }
 }

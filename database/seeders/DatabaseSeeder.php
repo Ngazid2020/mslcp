@@ -25,13 +25,57 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@example.com',
         ]);
 
-        Role::create(['name' => 'administrateur']);
+        $roleAdmin = Role::create(['name' => 'administrateur']);
 
         $userAdmin->assignRole('administrateur');
 
         User::factory()->create([
             'name' => 'labo1',
             'email' => 'labo1@example.com',
+        ]);
+
+        $this->call(RoleSeeder::class);
+        $this->call(PermissionSeeder::class);
+
+        $roleAdmin->givePermissionTo([
+            'create Role',
+            'update Role',
+            'view-any Role',
+            'view Role',
+            'delete Role',
+            'delete-any Role',
+            'restore Role',
+            'restore-any Role',
+            'replicate Role',
+            'reorder Role',
+            'force-delete Role',
+            'force-delete-any Role',
+
+            'create Permission',
+            'update Permission',
+            'view-any Permission',
+            'view Permission',
+            'delete Permission',
+            'delete-any Permission',
+            'restore Permission',
+            'restore-any Permission',
+            'replicate Permission',
+            'reorder Permission',
+            'force-delete Permission',
+            'force-delete-any Permission',
+
+            'create User',
+            'update User',
+            'view-any User',
+            'view User',
+            'delete User',
+            'delete-any User',
+            'restore User',
+            'restore-any User',
+            'replicate User',
+            'reorder User',
+            'force-delete User',
+            'force-delete-any User',
         ]);
 
         $categories = [
