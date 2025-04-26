@@ -15,9 +15,9 @@ class ListElements extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
-            ExcelImportAction::make()
-            ->label('Importer depuis un fichier Excel')
-            ->color("secondary"),
+            // ExcelImportAction::make()
+            // ->label('Importer depuis un fichier Excel')
+            // ->color("secondary"),
         ];
     }
 }
