@@ -17,7 +17,7 @@ class BilanPdfController extends Controller
             'nom' => 'Mme RAHAMATOU SILAI',
             'date' => $record->created_at->format('Y-m-d'),
         ]);
-
+// dump($record->elements[0]->category->name);die();
         $qrcode = base64_encode(QrCode::format('png')->size(200)->errorCorrection('H')->generate($meCard));
         // $qrcode = QrCode::size(250)->generate($vcard);
     

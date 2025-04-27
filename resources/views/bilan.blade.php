@@ -163,12 +163,12 @@
         </table>
 
         @php $formuleGlobulairePrinted = false; @endphp
-        @foreach($record->analyses as $analysis)
+        @foreach($record->elements as $element)
 
-        @if($analysis->element->category->name == 'NUMERATION GLOBULAIRE' && !$formuleGlobulairePrinted)
-        <div class="section-title">{{ $analysis->element->category->name ?? '__' }}</div>
+        @if($element->category->name == 'BILAN PARASITAIRE' && !$formuleGlobulairePrinted)
+        <div class="section-title">{{ $element->category->name ?? '__' }}</div>
 
-        <!-- <div class="section-title">HÉMOGRAMME</div> -->
+        <!-- <div class="section-title">BILAN PARASITAIRE</div> -->
 
         <table>
             <tr>
@@ -182,13 +182,13 @@
             @endif
 
             @endforeach
-            @foreach($record->analyses as $analysis)
-            @if($analysis->element->category->name == 'NUMERATION GLOBULAIRE')
+            @foreach($record->elements as $element)
+            @if($element->category->name == 'BILAN PARASITAIRE')
             @php
             if($record->patient->age < 5){
-                $refMin = floatval($analysis->element->ref_inf_nour ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_nour ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
+                $refMin = floatval($element->ref_inf_nour ?? 0);
+                $refMax = floatval($element->ref_sup_nour ?? 0);
+                $value = floatval($element->pivot->resultat ?? 0);
 
                 if($value < $refMin){
                     $arrow = 'arrow-down.png';
@@ -200,9 +200,9 @@
             }
 
             if($record->patient->age >= 5 && $record->patient->age < 15){
-                $refMin = floatval($analysis->element->ref_inf_enf ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_enf ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
+                $refMin = floatval($element->ref_inf_enf ?? 0);
+                $refMax = floatval($element->ref_sup_enf ?? 0);
+                $value = floatval($element->pivot->resultat ?? 0);
 
                 if($value < $refMin){
                     $arrow = 'arrow-down.png';
@@ -215,13 +215,13 @@
 
             if($record->patient->age >= 15){
                 if($record->patient->sexe == 'F'){
-                    $refMin = floatval($analysis->element->ref_inf_f ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_f ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
+                    $refMin = floatval($element->ref_inf_f ?? 0);
+                    $refMax = floatval($element->ref_sup_f ?? 0);
+                    $value = floatval($element->pivot->resultat ?? 0);
                 }else{
-                    $refMin = floatval($analysis->element->ref_inf_h ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_h ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
+                    $refMin = floatval($element->ref_inf_h ?? 0);
+                    $refMax = floatval($element->ref_sup_h ?? 0);
+                    $value = floatval($element->pivot->resultat ?? 0);
                 }
                 
 
@@ -236,595 +236,25 @@
                     
             @endphp
             <tr>
-                <td>{{$analysis->element->nom}}</td>
-                <td>{{$analysis->resultat}}</td>
-                <td>{{$analysis->element->unite}}</td>
+                <td>{{$element->nom}}</td>
+                <td>{{$element->pivot->resultat}}</td>
+                <td>{{$element->unite}}</td>
                 <td>{{ $refMin ?? 0}} - {{ $refMax ?? 0 }}</td>
                 <td><img src="{{public_path('img/'.$arrow)}}" class="symbole"></td>
             </tr>
             @endif
             @endforeach
             @php $formuleGlobulairePrinted = false; @endphp
-            @foreach($record->analyses as $analysis)
+            @foreach($record->elements as $element)
 
-            @if($analysis->element->category->name == 'NUMERATION GLOBULAIRE' && !$formuleGlobulairePrinted)
+            @if($element->category->name == 'BILAN PARASITAIRE' && !$formuleGlobulairePrinted)
         </table>
         @php $formuleGlobulairePrinted = true; @endphp
         @endif
         @endforeach
 
-
-        <!-- DIVIDER -->
-        @php $formuleGlobulairePrinted = false; @endphp
-        @foreach($record->analyses as $analysis)
-
-        @if($analysis->element->category->name == 'FORMULE SANGUINE' && !$formuleGlobulairePrinted)
-        <div class="section-title">{{ $analysis->element->category->name ?? '__' }}</div>
 
         
-
-        <table>
-            <tr>
-                <th>Paramètre</th>
-                <th>Valeur</th>
-                <th>Unité</th>
-                <th>Référence</th>
-                <th width="20">Etat</th>
-            </tr>
-            @php $formuleGlobulairePrinted = true; @endphp
-            @endif
-
-            @endforeach
-            @foreach($record->analyses as $analysis)
-            @if($analysis->element->category->name == 'FORMULE SANGUINE')
-
-            @php
-            if($record->patient->age < 5){
-                $refMin = floatval($analysis->element->ref_inf_nour ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_nour ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-
-            if($record->patient->age >= 5 && $record->patient->age < 15){
-                $refMin = floatval($analysis->element->ref_inf_enf ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_enf ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-
-            if($record->patient->age >= 15){
-                if($record->patient->sexe == 'F'){
-                    $refMin = floatval($analysis->element->ref_inf_f ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_f ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
-                }else{
-                    $refMin = floatval($analysis->element->ref_inf_h ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_h ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
-                }
-                
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-                    
-            @endphp
-            <tr>
-                <td>{{$analysis->element->nom}}</td>
-                <td>{{$analysis->resultat}}</td>
-                <td>{{ $analysis->element->unite }}</td>
-                <td>{{$refMin}} - {{$refMax}}</td>                
-
-                </td>
-                <td><img src="{{public_path('img/'.$arrow)}}" class="symbole"></td>
-            </tr>
-            @endif
-            @endforeach
-            @php $formuleGlobulairePrinted = false; @endphp
-            @foreach($record->analyses as $analysis)
-
-            @if($analysis->element->category->name == 'FORMULE SANGUINE' && !$formuleGlobulairePrinted)
-        </table>
-        @php $formuleGlobulairePrinted = true; @endphp
-        @endif
-        @endforeach
-        <!-- divider -->
-
-        <!-- DIVIDER -->
-        @php $formuleGlobulairePrinted = false; @endphp
-        @foreach($record->analyses as $analysis)
-
-        @if($analysis->element->category->name == 'NUMERATION DES PLAQUETTES' && !$formuleGlobulairePrinted)
-        <div class="section-title">{{ $analysis->element->category->name ?? '__' }}</div>
-
-        
-
-        <table>
-            <tr>
-                <th>Paramètre</th>
-                <th>Valeur</th>
-                <th>Unité</th>
-                <th>Référence</th>
-                <th width="20">Etat</th>
-            </tr>
-            @php $formuleGlobulairePrinted = true; @endphp
-            @endif
-
-            @endforeach
-            @foreach($record->analyses as $analysis)
-            @if($analysis->element->category->name == 'NUMERATION DES PLAQUETTES')
-
-            @php
-            if($record->patient->age < 5){
-                $refMin = floatval($analysis->element->ref_inf_nour ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_nour ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-
-            if($record->patient->age >= 5 && $record->patient->age < 15){
-                $refMin = floatval($analysis->element->ref_inf_enf ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_enf ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-
-            if($record->patient->age >= 15){
-                if($record->patient->sexe == 'F'){
-                    $refMin = floatval($analysis->element->ref_inf_f ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_f ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
-                }else{
-                    $refMin = floatval($analysis->element->ref_inf_h ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_h ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
-                }
-                
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-                    
-            @endphp
-            <tr>
-                <td>{{$analysis->element->nom}}</td>
-                <td>{{$analysis->resultat}}</td>
-                <td>{{ $analysis->element->unite }}</td>
-                <td>{{$refMin}} - {{$refMax}}</td>                
-
-                </td>
-                <td><img src="{{public_path('img/'.$arrow)}}" class="symbole"></td>
-            </tr>
-            @endif
-            @endforeach
-            @php $formuleGlobulairePrinted = false; @endphp
-            @foreach($record->analyses as $analysis)
-
-            @if($analysis->element->category->name == 'NUMERATION DES PLAQUETTES' && !$formuleGlobulairePrinted)
-        </table>
-        @php $formuleGlobulairePrinted = true; @endphp
-        @endif
-        @endforeach
-        <!-- divider -->
-
-        <!-- DIVIDER -->
-        @php $formuleGlobulairePrinted = false; @endphp
-        @foreach($record->analyses as $analysis)
-
-        @if($analysis->element->category->name == 'BIOCHIMIE' && !$formuleGlobulairePrinted)
-        <div class="section-title">{{ $analysis->element->category->name ?? '__' }}</div>
-
-        
-
-        <table>
-            <tr>
-                <th>Paramètre</th>
-                <th>Valeur</th>
-                <th>Unité</th>
-                <th>Référence</th>
-                <th width="20">Etat</th>
-            </tr>
-            @php $formuleGlobulairePrinted = true; @endphp
-            @endif
-
-            @endforeach
-            @foreach($record->analyses as $analysis)
-            @if($analysis->element->category->name == 'BIOCHIMIE')
-
-            @php
-            if($record->patient->age < 5){
-                $refMin = floatval($analysis->element->ref_inf_nour ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_nour ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-
-            if($record->patient->age >= 5 && $record->patient->age < 15){
-                $refMin = floatval($analysis->element->ref_inf_enf ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_enf ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-
-            if($record->patient->age >= 15){
-                if($record->patient->sexe == 'F'){
-                    $refMin = floatval($analysis->element->ref_inf_f ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_f ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
-                }else{
-                    $refMin = floatval($analysis->element->ref_inf_h ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_h ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
-                }
-                
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-                    
-            @endphp
-            <tr>
-                <td>{{$analysis->element->nom}}</td>
-                <td>{{$analysis->resultat}}</td>
-                <td>{{ $analysis->element->unite }}</td>
-                <td>{{$refMin}} - {{$refMax}}</td>                
-
-                </td>
-                <td><img src="{{public_path('img/'.$arrow)}}" class="symbole"></td>
-            </tr>
-            @endif
-            @endforeach
-            @php $formuleGlobulairePrinted = false; @endphp
-            @foreach($record->analyses as $analysis)
-
-            @if($analysis->element->category->name == 'BIOCHIMIE' && !$formuleGlobulairePrinted)
-        </table>
-        @php $formuleGlobulairePrinted = true; @endphp
-        @endif
-        @endforeach
-        <!-- divider -->
-
-        <!-- DIVIDER -->
-        @php $formuleGlobulairePrinted = false; @endphp
-        @foreach($record->analyses as $analysis)
-
-        @if($analysis->element->category->name == 'BILAN PARASITAIRE' && !$formuleGlobulairePrinted)
-        <div class="section-title">{{ $analysis->element->category->name ?? '__' }}</div>
-
-        
-
-        <table>
-            <tr>
-                <th>Paramètre</th>
-                <th>Valeur</th>
-                <th>Unité</th>
-                <th>Référence</th>
-                <th width="20">Etat</th>
-            </tr>
-            @php $formuleGlobulairePrinted = true; @endphp
-            @endif
-
-            @endforeach
-            @foreach($record->analyses as $analysis)
-            @if($analysis->element->category->name == 'BILAN PARASITAIRE')
-
-            @php
-            if($record->patient->age < 5){
-                $refMin = floatval($analysis->element->ref_inf_nour ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_nour ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-
-            if($record->patient->age >= 5 && $record->patient->age < 15){
-                $refMin = floatval($analysis->element->ref_inf_enf ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_enf ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-
-            if($record->patient->age >= 15){
-                if($record->patient->sexe == 'F'){
-                    $refMin = floatval($analysis->element->ref_inf_f ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_f ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
-                }else{
-                    $refMin = floatval($analysis->element->ref_inf_h ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_h ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
-                }
-                
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-                    
-            @endphp
-            <tr>
-                <td>{{$analysis->element->nom}}</td>
-                <td>{{$analysis->resultat}}</td>
-                <td>{{ $analysis->element->unite }}</td>
-                <td>{{$refMin}} - {{$refMax}}</td>                
-
-                </td>
-                <td><img src="{{public_path('img/'.$arrow)}}" class="symbole"></td>
-            </tr>
-            @endif
-            @endforeach
-            @php $formuleGlobulairePrinted = false; @endphp
-            @foreach($record->analyses as $analysis)
-
-            @if($analysis->element->category->name == 'BILAN PARASITAIRE' && !$formuleGlobulairePrinted)
-        </table>
-        @php $formuleGlobulairePrinted = true; @endphp
-        @endif
-        @endforeach
-        <!-- divider -->
-        <!-- DIVIDER -->
-        @php $formuleGlobulairePrinted = false; @endphp
-        @foreach($record->analyses as $analysis)
-
-        @if($analysis->element->category->name == 'ANALYSE URINAIRE' && !$formuleGlobulairePrinted)
-        <div class="section-title">{{ $analysis->element->category->name ?? '__' }}</div>
-
-        
-
-        <table>
-            <tr>
-                <th>Paramètre</th>
-                <th>Valeur</th>
-                <th>Unité</th>
-                <th>Référence</th>
-                <th width="20">Etat</th>
-            </tr>
-            @php $formuleGlobulairePrinted = true; @endphp
-            @endif
-
-            @endforeach
-            @foreach($record->analyses as $analysis)
-            @if($analysis->element->category->name == 'ANALYSE URINAIRE')
-
-            @php
-            if($record->patient->age < 5){
-                $refMin = floatval($analysis->element->ref_inf_nour ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_nour ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-
-            if($record->patient->age >= 5 && $record->patient->age < 15){
-                $refMin = floatval($analysis->element->ref_inf_enf ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_enf ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-
-            if($record->patient->age >= 15){
-                if($record->patient->sexe == 'F'){
-                    $refMin = floatval($analysis->element->ref_inf_f ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_f ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
-                }else{
-                    $refMin = floatval($analysis->element->ref_inf_h ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_h ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
-                }
-                
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-                    
-            @endphp
-            <tr>
-                <td>{{$analysis->element->nom}}</td>
-                <td>{{$analysis->resultat}}</td>
-                <td>{{ $analysis->element->unite }}</td>
-                <td>{{$refMin}} - {{$refMax}}</td>                
-
-                </td>
-                <td><img src="{{public_path('img/'.$arrow)}}" class="symbole"></td>
-            </tr>
-            @endif
-            @endforeach
-            @php $formuleGlobulairePrinted = false; @endphp
-            @foreach($record->analyses as $analysis)
-
-            @if($analysis->element->category->name == 'ANALYSE URINAIRE' && !$formuleGlobulairePrinted)
-        </table>
-        @php $formuleGlobulairePrinted = true; @endphp
-        @endif
-        @endforeach
-        <!-- divider -->
-        <!-- DIVIDER -->
-        @php $formuleGlobulairePrinted = false; @endphp
-        @foreach($record->analyses as $analysis)
-
-        @if($analysis->element->category->name == 'HEMOGRAMME' && !$formuleGlobulairePrinted)
-        <div class="section-title">{{ $analysis->element->category->name ?? '__' }}</div>        
-
-        <table>
-            <tr>
-                <th>Paramètre</th>
-                <th>Valeur</th>
-                <th>Unité</th>
-                <th>Référence</th>
-                <th width="20">Etat</th>
-            </tr>
-            @php $formuleGlobulairePrinted = true; @endphp
-            @endif
-
-            @endforeach
-            @foreach($record->analyses as $analysis)
-            @if($analysis->element->category->name == 'HEMOGRAMME')
-
-            @php
-            if($record->patient->age < 5){
-                $refMin = floatval($analysis->element->ref_inf_nour ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_nour ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-
-            if($record->patient->age >= 5 && $record->patient->age < 15){
-                $refMin = floatval($analysis->element->ref_inf_enf ?? 0);
-                $refMax = floatval($analysis->element->ref_sup_enf ?? 0);
-                $value = floatval($analysis->resultat ?? 0);
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-
-            if($record->patient->age >= 15){
-                if($record->patient->sexe == 'F'){
-                    $refMin = floatval($analysis->element->ref_inf_f ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_f ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
-                }else{
-                    $refMin = floatval($analysis->element->ref_inf_h ?? 0);
-                    $refMax = floatval($analysis->element->ref_sup_h ?? 0);
-                    $value = floatval($analysis->resultat ?? 0);
-                }
-                
-
-                if($value < $refMin){
-                    $arrow = 'arrow-down.png';
-                }else if($value > $refMax){
-                    $arrow = 'arrow-up.png';
-                }else{
-                    $arrow = 'check_ok.png';
-                }
-            }
-                    
-            @endphp
-            <tr>
-                <td>{{$analysis->element->nom}}</td>
-                <td>{{$analysis->resultat}}</td>
-                <td>{{ $analysis->element->unite }}</td>
-                <td>{{$refMin}} - {{$refMax}}</td>                
-
-                </td>
-                <td><img src="{{public_path('img/'.$arrow)}}" class="symbole"></td>
-            </tr>
-            @endif
-            @endforeach
-            @php $formuleGlobulairePrinted = false; @endphp
-            @foreach($record->analyses as $analysis)
-
-            @if($analysis->element->category->name == 'HEMOGRAMME' && !$formuleGlobulairePrinted)
-        </table>
-        @php $formuleGlobulairePrinted = true; @endphp
-        @endif
-        @endforeach
-        <!-- divider -->
         
 
         

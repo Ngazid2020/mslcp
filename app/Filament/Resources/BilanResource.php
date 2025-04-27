@@ -6,8 +6,10 @@ use App\Filament\Resources\BilanResource\Pages;
 use App\Filament\Resources\BilanResource\RelationManagers;
 use App\Filament\Resources\ElementsResource\RelationManagers\ElementsRelationManager;
 use App\Models\Bilan;
+use App\Models\Category;
 use App\Models\Element;
 use Filament\Forms;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
@@ -55,16 +57,22 @@ class BilanResource extends Resource
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
-                                TextInput::make('nom'),
-                                TextInput::make('prenom'),
-                                Select::make('sexe')
-                                    ->options([
-                                        'Masculin' => 'Masculin',
-                                        'Féminin' => 'Féminin'
-                                    ]),
-                                TextInput::make('domicile'),
-                                TextInput::make('lieu_naissance'),
-                                TextInput::make('age')
+                                Grid::make(2)
+                                    ->schema([
+                                        TextInput::make('nom'),
+                                        TextInput::make('prenom'),
+                                        Select::make('sexe')
+                                            ->options([
+                                                'Masculin' => 'Masculin',
+                                                'Féminin' => 'Féminin'
+                                            ]),
+                                        TextInput::make('domicile'),
+                                        TextInput::make('lieu_naissance'),
+                                        TextInput::make('age')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(120),
+                                    ])
                             ])
                             // ->columns(2)
                             ->label('Patient'),
@@ -75,17 +83,37 @@ class BilanResource extends Resource
                     ])
                     ->columns(2),
                 Section::make('Résultats des analyses')->schema([
+                    CheckboxList::make('categorie')
+                        ->label(__('Catégories'))
+                        ->options(Category::query()->orderBy('name')->pluck('name', 'id'))
+                        ->columns(4)
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            // $state contient les IDs des catégories sélectionnées
+                            if (empty($state)) {
+                                $set('elements', []);
+                                return;
+                            }
+                            // Récupère tous les IDs des éléments appartenant aux catégories sélectionnées
+                            $elementIds = Element::whereIn('category_id', $state)->pluck('id')->toArray();
+                            $set('elements', $elementIds);
+                        }),
                     CheckboxList::make('elements')
-                        ->columns(3)
-                        ->relationship('elements', 'id')
-                        ->options(Element::all()->pluck('nom', 'id'))
-                        ->afterStateUpdated(function (callable $set, $state) {
-                            $set('elements', $state);
+                        ->label(__('Liste des présents'))
+                        ->relationship('elements','id')
+                        ->options(function (callable $get) {
+                            $categories = $get('categorie') ?? [];
+                            if (empty($categories)) {
+                                return Element::query()->orderBy('nom')->pluck('nom', 'id');
+                            }
+                            return Element::whereIn('category_id', $categories)
+                                ->orderBy('nom')
+                                ->pluck('nom', 'id');
                         })
+                        ->columns(3)
                         ->searchable()
-                        ->label('Liste des présents')
-                        ->columnSpanFull()
-                        ->reactive(),
+                        ->reactive()
+                        ->columnSpanFull(),
                 ])
                     ->hiddenOn('edit')
 

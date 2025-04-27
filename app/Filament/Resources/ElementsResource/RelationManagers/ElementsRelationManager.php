@@ -21,7 +21,8 @@ class ElementsRelationManager extends RelationManager
             ->schema([
                 Forms\Components\TextInput::make('nom')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->disabled(),
                     TextInput::make('resultat'),
             ]);
     }
@@ -32,6 +33,7 @@ class ElementsRelationManager extends RelationManager
             ->recordTitleAttribute('nom')
             ->columns([
                 Tables\Columns\TextColumn::make('nom'),
+                Tables\Columns\TextColumn::make('category.name'),
                 Tables\Columns\TextColumn::make('resultat'),
             ])
             ->filters([
