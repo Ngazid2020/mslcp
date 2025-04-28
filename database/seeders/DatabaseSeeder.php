@@ -38,6 +38,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PermissionSeeder::class);
 
         $roleAdmin->givePermissionTo([
+            // Permissions pour Role
             'create Role',
             'update Role',
             'view-any Role',
@@ -51,6 +52,7 @@ class DatabaseSeeder extends Seeder
             'force-delete Role',
             'force-delete-any Role',
 
+            // Permissions pour Permission
             'create Permission',
             'update Permission',
             'view-any Permission',
@@ -64,6 +66,7 @@ class DatabaseSeeder extends Seeder
             'force-delete Permission',
             'force-delete-any Permission',
 
+            // Permissions pour User
             'create User',
             'update User',
             'view-any User',
@@ -76,6 +79,76 @@ class DatabaseSeeder extends Seeder
             'reorder User',
             'force-delete User',
             'force-delete-any User',
+            
+            // Permissions pour Element
+            'create Element',
+            'update Element',
+            'view-any Element',
+            'view Element',
+            'delete Element',
+            'delete-any Element',
+            'restore Element',
+            'restore-any Element',
+            'replicate Element',
+            'reorder Element',
+            'force-delete Element',
+            'force-delete-any Element',
+
+            // Permissions pour Bilan
+            'create Bilan',
+            'update Bilan',
+            'view-any Bilan',
+            'view Bilan',
+            'delete Bilan',
+            'delete-any Bilan',
+            'restore Bilan',
+            'restore-any Bilan',
+            'replicate Bilan',
+            'reorder Bilan',
+            'force-delete Bilan',
+            'force-delete-any Bilan',
+
+            // Permissions pour Category
+            'create Category',
+            'update Category',
+            'view-any Category',
+            'view Category',
+            'delete Category',
+            'delete-any Category',
+            'restore Category',
+            'restore-any Category',
+            'replicate Category',
+            'reorder Category',
+            'force-delete Category',
+            'force-delete-any Category',
+
+            // Permissions pour Prescripteur
+            'create Prescripteur',
+            'update Prescripteur',
+            'view-any Prescripteur',
+            'view Prescripteur',
+            'delete Prescripteur',
+            'delete-any Prescripteur',
+            'restore Prescripteur',
+            'restore-any Prescripteur',
+            'replicate Prescripteur',
+            'reorder Prescripteur',
+            'force-delete Prescripteur',
+            'force-delete-any Prescripteur',
+
+            // Permissions pour Patient
+            'create Patient',
+            'update Patient',
+            'view-any Patient',
+            'view Patient',
+            'delete Patient',
+            'delete-any Patient',
+            'restore Patient',
+            'restore-any Patient',
+            'replicate Patient',
+            'reorder Patient',
+            'force-delete Patient',
+            'force-delete-any Patient',
         ]);
 
         $categories = [
