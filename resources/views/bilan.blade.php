@@ -150,9 +150,9 @@
                 <td class="info">
                     <strong>Cabinet Médical Privé</strong><br>
                     Patient : {{$record->patient->nom ?? '__'}}, Âge : {{$record->patient->age}} , Sexe : {{$record->patient->sexe ?? '__'}}<br>
-                    Lieu : {{$record->patient->lieu_naissance ?? '__'}}, Résidence : {{$record->patient->adresse ?? '__'}}<br>
-                    Préscripteur : Dr {{$record->patient->prescripteur ?? '__'}}<br><br>
-                    <strong>Numéro de patient :</strong> 0-0-25<br>
+                    Lieu : {{$record->patient->lieu_naissance ?? '__'}}, Résidence : {{$record->patient->domicile ?? '__'}}<br>
+                    Préscripteur : Dr {{$record->prescripteur->nom ?? '__'}}<br><br>
+                    <strong>Numéro de patient :</strong> {{$record->patient->id}}<br>
                     <strong>Prélevé le :</strong> {{$record->created_at}}<br>
                     <!-- <strong>Édité le :</strong> 0-0-25 -->
                 </td>

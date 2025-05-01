@@ -47,7 +47,7 @@ class ElementResource extends Resource
 
                 ])->columns(3),
                 Section::make()->schema([
-                    Grid::make(['default' => 1, 'md' => 2, 'xl' => 4])->schema([
+                    Grid::make(['default' => 1, 'md' => 2, 'xl' => 5])->schema([
                         Section::make('Homme Adulte')->schema([
                             Forms\Components\TextInput::make('ref_inf_h')
                                 ->label('Norme inférieure')
@@ -84,6 +84,16 @@ class ElementResource extends Resource
                                 ->maxLength(255)
                                 ->default(null),
                             Forms\Components\TextInput::make('ref_sup_nour')
+                                ->label('Norme supérieur')
+                                ->maxLength(255)
+                                ->default(null),
+                        ])->columnSpan(1),
+                        Section::make('Nouveau-né(e)')->schema([
+                            Forms\Components\TextInput::make('ref_inf_nne')
+                                ->label('Norme inférieure')
+                                ->maxLength(255)
+                                ->default(null),
+                            Forms\Components\TextInput::make('ref_sup_nne')
                                 ->label('Norme supérieur')
                                 ->maxLength(255)
                                 ->default(null),

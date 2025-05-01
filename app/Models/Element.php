@@ -22,6 +22,8 @@ class Element extends Model
         'ref_sup_enf',
         'ref_inf_nour',
         'ref_sup_nour',
+        'ref_inf_nne',
+        'ref_sup_nne',
         'norme_enfant',
         'norme_nourisson',
         'unite',

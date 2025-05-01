@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('ref_sup_enf')->nullable();
             $table->string('ref_inf_nour')->nullable();
             $table->string('ref_sup_nour')->nullable();
+            $table->string('ref_inf_nne')->nullable();
+            $table->string('ref_sup_nne')->nullable();
             $table->string('unite')->nullable();
 
             $table->foreignIdFor(Category::class)->constrained()->cascadeOnDelete();

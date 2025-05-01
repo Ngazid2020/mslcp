@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <link rel="stylesheet" href="{{asset('css/custom/remixicon.min.css')}}">
     @livewireStyles
     @livewireScripts
     @filamentStyles
@@ -251,7 +251,7 @@
             <div>
                 <a href="/admin" class="btn-pulse bg-primary text-white px-5 py-2 !rounded-button font-medium hover:bg-blue-600 transition-all shadow-md whitespace-nowrap flex items-center">
                     <div class="w-5 h-5 flex items-center justify-center mr-2">
-                        <i class="ri-user-line"></i>
+                    @svg('heroicon-o-user')
                     </div>
                     Espace Laboratoire
                 </a>
@@ -272,13 +272,13 @@
                 <div class="flex flex-col sm:flex-row gap-4">
                     <a href="#rendez-vous" class="bg-primary text-white px-6 py-3 !rounded-button font-medium hover:bg-blue-600 transition-all shadow-md whitespace-nowrap flex items-center justify-center">
                         <div class="w-5 h-5 flex items-center justify-center mr-2">
-                            <i class="ri-calendar-line"></i>
+                        @svg('heroicon-o-calendar-days')
                         </div>
                         Prendre rendez-vous
                     </a>
                     <a href="#resultats" class="bg-white text-primary border border-primary px-6 py-3 !rounded-button font-medium hover:bg-gray-50 transition-all shadow-sm whitespace-nowrap flex items-center justify-center">
                         <div class="w-5 h-5 flex items-center justify-center mr-2">
-                            <i class="ri-file-list-3-line"></i>
+                        @svg('heroicon-o-queue-list')
                         </div>
                         Consulter mes résultats
                     </a>
@@ -298,75 +298,79 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div class="service-card bg-white p-6 rounded-lg shadow-md border border-gray-100 fade-in">
                     <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4 service-icon">
-                        <i class="ri-test-tube-line text-primary text-2xl"></i>
+                        <!-- <i class="ri-test-tube-line text-primary text-2xl"></i> -->
+                        @svg('heroicon-o-beaker','w-5 h-5 text-primary')
                     </div>
                     <h3 class="text-xl font-semibold text-gray-800 mb-3">Analyses Sanguines</h3>
                     <p class="text-gray-600 mb-4">Hémogramme, glycémie, cholestérol, bilan hépatique, ionogramme et plus de 200 paramètres analysables.</p>
                     <a href="#" class="text-primary font-medium flex items-center hover:underline">
                         En savoir plus
                         <div class="w-5 h-5 flex items-center justify-center ml-1">
-                            <i class="ri-arrow-right-line"></i>
+                            @svg('heroicon-o-arrow-right')
                         </div>
                     </a>
                 </div>
                 
                 <div class="service-card bg-white p-6 rounded-lg shadow-md border border-gray-100 fade-in">
                     <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4 service-icon">
-                        <i class="ri-microscope-line text-primary text-2xl"></i>
+                        <!-- <i class="ri-microscope-line text-primary text-2xl"></i> -->
+                        @svg('heroicon-o-eye-dropper','w-5 h-5 text-primary')
                     </div>
                     <h3 class="text-xl font-semibold text-gray-800 mb-3">Microbiologie</h3>
                     <p class="text-gray-600 mb-4">Analyses bactériologiques, mycologiques et parasitologiques pour identifier les agents pathogènes.</p>
                     <a href="#" class="text-primary font-medium flex items-center hover:underline">
                         En savoir plus
                         <div class="w-5 h-5 flex items-center justify-center ml-1">
-                            <i class="ri-arrow-right-line"></i>
+                        @svg('heroicon-o-arrow-right')
                         </div>
                     </a>
                 </div>
                 
                 <div class="service-card bg-white p-6 rounded-lg shadow-md border border-gray-100 fade-in">
                     <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4 service-icon">
-                        <i class="ri-heart-pulse-line text-primary text-2xl"></i>
+                        @svg('heroicon-o-heart','w-5 h-5 text-primary')
                     </div>
                     <h3 class="text-xl font-semibold text-gray-800 mb-3">Cardiologie</h3>
                     <p class="text-gray-600 mb-4">Électrocardiogrammes, tests d'effort et analyses spécifiques pour la santé cardiovasculaire.</p>
                     <a href="#" class="text-primary font-medium flex items-center hover:underline">
                         En savoir plus
                         <div class="w-5 h-5 flex items-center justify-center ml-1">
-                            <i class="ri-arrow-right-line"></i>
+                            @svg('heroicon-o-arrow-right')
                         </div>
                     </a>
                 </div>
                 
                 <div class="service-card bg-white p-6 rounded-lg shadow-md border border-gray-100 fade-in">
                     <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4 service-icon">
-                        <i class="ri-virus-line text-primary text-2xl"></i>
+                        <!-- <i class="ri-virus-line text-primary text-2xl"></i> -->
+                        @svg('heroicon-o-bug-ant','w-5 h-5 text-primary')
                     </div>
                     <h3 class="text-xl font-semibold text-gray-800 mb-3">Immunologie</h3>
                     <p class="text-gray-600 mb-4">Dépistage des allergies, maladies auto-immunes et évaluation du système immunitaire.</p>
                     <a href="#" class="text-primary font-medium flex items-center hover:underline">
                         En savoir plus
                         <div class="w-5 h-5 flex items-center justify-center ml-1">
-                            <i class="ri-arrow-right-line"></i>
+                            @svg('heroicon-o-arrow-right')
                         </div>
                     </a>
                 </div>
                 
                 <div class="service-card bg-white p-6 rounded-lg shadow-md border border-gray-100 fade-in">
                     <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4 service-icon">
-                        <i class="ri-women-line text-primary text-2xl"></i>
+                        <!-- <i class="ri-women-line text-primary text-2xl"></i> -->
+                        @svg('heroicon-o-funnel','w-5 h-5 text-primary')
                     </div>
                     <h3 class="text-xl font-semibold text-gray-800 mb-3">Gynécologie</h3>
                     <p class="text-gray-600 mb-4">Frottis, tests hormonaux, dépistage prénatal et suivi de grossesse personnalisé.</p>
                     <a href="#" class="text-primary font-medium flex items-center hover:underline">
                         En savoir plus
                         <div class="w-5 h-5 flex items-center justify-center ml-1">
-                            <i class="ri-arrow-right-line"></i>
+                            @svg('heroicon-o-arrow-right')
                         </div>
                     </a>
                 </div>
                 
-                <div class="service-card bg-white p-6 rounded-lg shadow-md border border-gray-100 fade-in">
+                <!-- <div class="service-card bg-white p-6 rounded-lg shadow-md border border-gray-100 fade-in">
                     <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4 service-icon">
                         <i class="ri-home-heart-line text-primary text-2xl"></i>
                     </div>
@@ -378,7 +382,7 @@
                             <i class="ri-arrow-right-line"></i>
                         </div>
                     </a>
-                </div>
+                </div> -->
             </div>
         </div>
     </section>
@@ -422,7 +426,7 @@
                 <div class="bg-white p-6 rounded-lg shadow-md fade-in">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <div class="w-6 h-6 flex items-center justify-center mr-2 text-primary">
-                            <i class="ri-map-pin-line"></i>
+                        @svg('heroicon-o-map-pin')
                         </div>
                         Nos Adresses
                     </h3>
@@ -444,7 +448,7 @@
                 <div class="bg-white p-6 rounded-lg shadow-md fade-in">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                         <div class="w-6 h-6 flex items-center justify-center mr-2 text-primary">
-                            <i class="ri-information-line"></i>
+                        @svg('heroicon-o-information-circle')                        
                         </div>
                         Chiffres Clés
                     </h3>

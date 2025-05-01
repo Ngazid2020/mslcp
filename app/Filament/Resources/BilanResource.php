@@ -44,13 +44,6 @@ class BilanResource extends Resource
             ->schema([
                 Section::make('Informations')
                     ->schema([
-                        Forms\Components\TextInput::make('ref')
-                            ->label('Référence')
-                            ->maxLength(255)
-                            ->default(null),
-                        Forms\Components\TextInput::make('type')
-                            ->maxLength(255)
-                            ->default(null),
                         Forms\Components\Select::make('patient_id')
                             ->relationship('patient', 'nom')
                             ->required()
@@ -78,6 +71,15 @@ class BilanResource extends Resource
                             ->label('Patient'),
                         Select::make('prescripteur_id')
                             ->relationship('prescripteur', 'nom')
+                            ->createOptionForm([
+                                Grid::make(2)
+                                    ->schema([
+                                        TextInput::make('nom'),                                        
+                                        TextInput::make('adresse'),
+                                        TextInput::make('tel'),
+                                        TextInput::make('email'),
+                                    ])
+                            ])
                             ->preload()
                             ->searchable(),
                     ])
@@ -124,17 +126,13 @@ class BilanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('ref')
-                    ->label('Référence')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('type')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('patient.nom')
                     ->numeric()
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                ->label('Créé le')
+                    ->dateTime('d/m/Y H:m:s')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('updated_at')
