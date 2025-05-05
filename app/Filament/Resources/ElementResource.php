@@ -133,15 +133,15 @@ class ElementResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    ExportBulkAction::make()
-                        ->exporter(ElementExporter::class)
-                        ->label('Exporter'),
+                    // ExportBulkAction::make()
+                    //     ->exporter(ElementExporter::class)
+                    //     ->label('Exporter'),
                         
                 ]),
             ])
             ->headerActions([
-                ExportAction::make()
-                    ->exporter(ElementExporter::class)
+                // ExportAction::make()
+                //     ->exporter(ElementExporter::class)
             ]);
     }
 

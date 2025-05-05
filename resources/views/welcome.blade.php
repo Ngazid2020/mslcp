@@ -264,7 +264,7 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="hero-section min-h-[600px] flex items-center pt-24" style="background-image: url('http://localhost:8000/img/bg-img.jpg');">
+    <section class="hero-section min-h-[600px] flex items-center pt-24" style="background-image: url('http://mslcp.local/img/bg-img.jpg');">
         <div class="container mx-auto px-36 py-16">
             <div class="hero-content max-w-2xl slide-in-left">
                 <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">Votre santé mérite la meilleure analyse</h1>
