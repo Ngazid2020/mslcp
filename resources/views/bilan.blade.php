@@ -55,8 +55,8 @@
             background-color: #f0f0f0;
             color: #000;
             padding: 8px 12px;
-            margin-top: 30px;
-            margin-bottom: 10px;
+            margin-top: 20px;
+            margin-bottom: 5px;
             border-radius: 6px;
             font-weight: bold;
         }
@@ -76,7 +76,7 @@
 
         th,
         td {
-            padding: 10px;
+            padding: 0px;
             text-align: center;
         }
 
@@ -92,7 +92,7 @@
         }
 
         .signature img {
-            width: 150px;
+            width: 100px;
             height: auto;
         }
 
@@ -122,7 +122,8 @@
         .info-table td {
             border: none;
             padding: 0;
-            vertical-align: top;
+            vertical-align: top;            
+            font-size: 12px;
         }
 
         .info-table td.info {
@@ -130,7 +131,7 @@
         }
 
         .symbole {
-            width: 25px;
+            width: 15px;
             /* height: 25px; */
         }
     </style>
@@ -139,15 +140,15 @@
 <body>
     <div class="container">
         <header>
-            <h1>MAISON DE SURVEILLANCE ET DE LUTTE CONTRE LE PALUDISME (MSLCP)</h1>
-            <h2>LABORATOIRE D’ANALYSES MÉDICALES</h2>
-            <p>Dirigée par Mme Rahamatou SILAI – Parasitologue / MSc Biochimie<br>
+            <h3 style="font-size: 16px;">MAISON DE SURVEILLANCE ET DE LUTTE CONTRE LE PALUDISME (MSLCP)</h3>
+            <h4 style="font-size: 14px">LABORATOIRE D’ANALYSES MÉDICALES</h4>
+            <p style="font-size: 12px">Dirigée par Mme Rahamatou SILAI – Parasitologue / MSc Biochimie<br>
                 Tél : +269 3330375 / 4735095 – Email : <a href="mailto:mslcp_silai@yahoo.fr">mslcp_silai@yahoo.fr</a></p>
         </header>
 
         <table class="info-table">
             <tr>
-                <td class="info">
+                <td class="info" style="font-size: 12px;">
                     <strong>Cabinet Médical Privé</strong><br>
                     Patient : {{$record->patient->nom ?? '__'}}, Âge : {{$record->patient->age}} , Sexe : {{$record->patient->sexe ?? '__'}}<br>
                     Lieu : {{$record->patient->lieu_naissance ?? '__'}}, Résidence : {{$record->patient->domicile ?? '__'}}<br>
@@ -202,7 +203,7 @@
 
         @foreach ($categories as $categoryName => $elements)
             <div class="section-title">{{ $categoryName }}</div>
-            <table>
+            <table style="font-size: 12px;">
                 <tr>
                     <th width="30%">Paramètre</th>
                     <th>Valeur</th>
@@ -228,7 +229,7 @@
         @endforeach
 
         <div class="signature">
-            <p style="margin-bottom: -10px;"><strong>Responsable du Laboratoire:</strong></p>
+            <p style="margin-bottom: -10px; font-size: 12px"><strong>Responsable du Laboratoire:</strong></p>
             <img src="{{ public_path('img/signature.png') }}" alt="Signature du médecin">
         </div>
     </div>
