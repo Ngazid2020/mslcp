@@ -35,14 +35,22 @@ class ElementResource extends Resource
                 Section::make('Informations de l\'élément')->schema([
                     Grid::make(['default' => 1, 'md' => 2, 'xl' => 3])->schema([
                         Forms\Components\TextInput::make('nom')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('unite')
-                        ->maxLength(255)
-                        ->default(null),
-                    Select::make('category_id')
-                        ->relationship('category', 'name')
-                        ->required(),
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('unite')
+                            ->maxLength(255)
+                            ->default(null),
+                        Select::make('category_id')
+                            ->relationship('category', 'name')
+                            ->unique()
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                            ]),
                     ])
 
                 ])->columns(3),
@@ -136,7 +144,7 @@ class ElementResource extends Resource
                     // ExportBulkAction::make()
                     //     ->exporter(ElementExporter::class)
                     //     ->label('Exporter'),
-                        
+
                 ]),
             ])
             ->headerActions([
