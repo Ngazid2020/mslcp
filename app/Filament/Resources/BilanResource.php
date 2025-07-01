@@ -74,7 +74,7 @@ class BilanResource extends Resource
                             ->createOptionForm([
                                 Grid::make(2)
                                     ->schema([
-                                        TextInput::make('nom'),                                        
+                                        TextInput::make('nom'),
                                         TextInput::make('adresse'),
                                         TextInput::make('tel'),
                                         TextInput::make('email'),
@@ -101,16 +101,19 @@ class BilanResource extends Resource
                             $set('elements', $elementIds);
                         }),
                     CheckboxList::make('elements')
-                        ->label(__('Liste des présents'))
-                        ->relationship('elements','id')
+                        ->label(__('Liste des éléments'))
+                        ->relationship('elements', 'id')
                         ->options(function (callable $get) {
                             $categories = $get('categorie') ?? [];
                             if (empty($categories)) {
                                 return Element::query()->orderBy('nom')->pluck('nom', 'id');
                             }
-                            return Element::whereIn('category_id', $categories)
+                            $elements = Element::whereIn('category_id', $categories)
                                 ->orderBy('nom')
-                                ->pluck('nom', 'id');
+                                ->pluck('nom', 'id')
+                                ->toArray();
+                            natcasesort($elements);
+                            return $elements;
                         })
                         ->columns(3)
                         ->searchable()
@@ -131,7 +134,7 @@ class BilanResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                ->label('Créé le')
+                    ->label('Créé le')
                     ->dateTime('d/m/Y H:m:s')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),

@@ -31,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandLogo(asset('img/logo.png'))
+            ->brandName('MSLCP')
             ->brandLogoHeight('40px')
             ->colors([
                 'primary' => Color::Sky,

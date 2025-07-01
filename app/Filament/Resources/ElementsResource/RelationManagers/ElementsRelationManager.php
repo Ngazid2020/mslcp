@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ElementsResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -22,6 +23,9 @@ class ElementsRelationManager extends RelationManager
                 Forms\Components\TextInput::make('nom')
                     ->required()
                     ->maxLength(255)
+                    ->disabled(),
+                    Select::make('category')
+                    ->relationship('category', 'name')
                     ->disabled(),
                     TextInput::make('resultat'),
             ]);

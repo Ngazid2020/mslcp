@@ -13,7 +13,7 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'DejaVu Sans', Arial, sans-serif;
             color: #000;
             background: #fff;
             margin: 0;
@@ -92,7 +92,7 @@
         }
 
         .signature img {
-            width: 100px;
+            width: 150px;
             height: auto;
         }
 
@@ -122,7 +122,7 @@
         .info-table td {
             border: none;
             padding: 0;
-            vertical-align: top;            
+            vertical-align: top;
             font-size: 12px;
         }
 
@@ -131,7 +131,7 @@
         }
 
         .symbole {
-            width: 15px;
+            width: 10px;
             /* height: 25px; */
         }
     </style>
@@ -166,72 +166,79 @@
         @php
         // Fonction pour déterminer l'état (flèche) selon la valeur et les références
         function getArrowAndRefs($element, $age, $sexe, &$refMin, &$refMax) {
-            $value = floatval($element->pivot->resultat ?? 0);
+        $value = floatval($element->pivot->resultat ?? 0);
 
-            if ($age < 5) {
-                $refMin = floatval($element->ref_inf_nour ?? 0);
-                $refMax = floatval($element->ref_sup_nour ?? 0);
+        if ($age < 5) {
+            $refMin=floatval($element->ref_inf_nour ?? 0);
+            $refMax = floatval($element->ref_sup_nour ?? 0);
             } elseif ($age >= 5 && $age < 15) {
-                $refMin = floatval($element->ref_inf_enf ?? 0);
+                $refMin=floatval($element->ref_inf_enf ?? 0);
                 $refMax = floatval($element->ref_sup_enf ?? 0);
-            } else { // âge >= 15
+                } else { // âge >= 15
                 if ($sexe == 'F') {
-                    $refMin = floatval($element->ref_inf_f ?? 0);
-                    $refMax = floatval($element->ref_sup_f ?? 0);
+                $refMin = floatval($element->ref_inf_f ?? 0);
+                $refMax = floatval($element->ref_sup_f ?? 0);
                 } else {
-                    $refMin = floatval($element->ref_inf_h ?? 0);
-                    $refMax = floatval($element->ref_sup_h ?? 0);
+                $refMin = floatval($element->ref_inf_h ?? 0);
+                $refMax = floatval($element->ref_sup_h ?? 0);
                 }
-            }
+                }
 
-            if ($value < $refMin) {
-                return 'arrow-down.png';
-            } elseif ($value > $refMax) {
-                return 'arrow-up.png';
-            } else {
-                return 'check_ok.png';
-            }
-        }
+                if ($value < $refMin) {
+                    return 'arrow-down.png' ;
+                    } elseif ($value> $refMax) {
+                    return 'arrow-up.png';
+                    } else {
+                    return 'check_ok.png';
+                    }
+                    }
 
-        // Regrouper les éléments par catégorie
-        $categories = [];
-        foreach ($record->elements as $element) {
-            $catName = $element->category->name ?? 'Sans catégorie';
-            $categories[$catName][] = $element;
-        }
-        @endphp
+                    // Regrouper les éléments par catégorie
+                    $categories = [];
+                    foreach ($record->elements as $element) {
+                    $catName = $element->category->name ?? 'Sans catégorie';
+                    $categories[$catName][] = $element;
+                    }
+                    @endphp
 
-        @foreach ($categories as $categoryName => $elements)
-            <div class="section-title">{{ $categoryName }}</div>
-            <table style="font-size: 12px;">
-                <tr>
-                    <th width="30%">Paramètre</th>
-                    <th>Valeur</th>
-                    <th>Unité</th>
-                    <th>Référence</th>
-                    <th width="20">État</th>
-                </tr>
-                @foreach ($elements as $element)
-                    @php
+                    @foreach ($categories as $categoryName => $elements)
+                    <div class="section-title">{{ $categoryName }}</div>
+                    <table style="font-size: 12px;">
+                        <tr>
+                            <th width="30%">Paramètre</th>
+                            <th>Valeur</th>
+                            <th>Unité</th>
+                            <th>Référence</th>
+                            <th width="20">État</th>
+                        </tr>
+                        @foreach ($elements as $element)
+                        @php
                         $refMin = 0;
                         $refMax = 0;
                         $arrow = getArrowAndRefs($element, $record->patient->age, $record->patient->sexe, $refMin, $refMax);
-                    @endphp
-                    <tr>
-                        <td>{{ $element->nom }}</td>
-                        <td>{{ $element->pivot->resultat }}</td>
-                        <td>{{ $element->unite }}</td>
-                        <td>{{ $refMin }} - {{ $refMax }}</td>
-                        <td><img src="{{ public_path('img/' . $arrow) }}" class="symbole" alt="État"></td>
-                    </tr>
-                @endforeach
-            </table>
-        @endforeach
+                        @endphp
+                        <tr>
+                            <td>
+                                @if ($element->nom === 'BetaHCG')
+                                    &beta;HCG
+                                @else
+                                    {{ $element->nom }}
+                                @endif
 
-        <div class="signature">
-            <p style="margin-bottom: -10px; font-size: 12px"><strong>Responsable du Laboratoire:</strong></p>
-            <img src="{{ public_path('img/signature.png') }}" alt="Signature du médecin">
-        </div>
+                            </td>
+                            <td>{{ $element->pivot->resultat }}</td>
+                            <td>{{ $element->unite }}</td>
+                            <td>{{ $refMin }} - {{ $refMax }}</td>
+                            <td><img src="{{ public_path('img/' . $arrow) }}" class="symbole" alt="État"></td>
+                        </tr>
+                        @endforeach
+                    </table>
+                    @endforeach
+
+                    <div class="signature">
+                        <img src="{{ public_path('img/signature.png') }}" alt="Signature du médecin">
+                        <p style="margin-bottom: -10px; font-size: 12px"><strong>Responsable du Laboratoire</strong></p>
+                    </div>
     </div>
 </body>
 

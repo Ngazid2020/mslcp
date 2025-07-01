@@ -26,6 +26,7 @@ class ElementResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-eye-dropper';
     protected static ?string $navigationGroup = 'Eléments et paramètres';
+    protected static ?string $navigationLabel = 'Éléments d\'analyse';
     protected static ?int $navigationGroupSort = 3;
 
     public static function form(Form $form): Form
@@ -42,7 +43,6 @@ class ElementResource extends Resource
                             ->default(null),
                         Select::make('category_id')
                             ->relationship('category', 'name')
-                            ->unique()
                             ->searchable()
                             ->preload()
                             ->required()
@@ -117,12 +117,13 @@ class ElementResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nom')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('unite')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('category.name')
-                    ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -141,9 +142,9 @@ class ElementResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    // ExportBulkAction::make()
-                    //     ->exporter(ElementExporter::class)
-                    //     ->label('Exporter'),
+                    ExportBulkAction::make()
+                        ->exporter(ElementExporter::class)
+                        ->label('Exporter'),
 
                 ]),
             ])
