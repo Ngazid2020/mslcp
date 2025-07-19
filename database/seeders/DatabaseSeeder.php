@@ -258,8 +258,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $categories = [
-            'FORMULE SANGUINE',
             'NUMERATION GLOBULAIRE',
+            'FORMULE SANGUINE',
             'NUMERATION DES PLAQUETTES',
             'BILAN PROSTATIQUE',
             'FSH',
