@@ -24,6 +24,6 @@ class BilanPdfController extends Controller
         $pdf = Pdf::loadView('bilan', compact('record','qrcode'));
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
-        }, 'bilan_'.$record->id.'.pdf');
+        }, 'bilan_'.$record->nom.'.pdf');
     }
 }

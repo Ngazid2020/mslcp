@@ -8,6 +8,7 @@ use App\Filament\Resources\ElementsResource\RelationManagers\ElementsRelationMan
 use App\Models\Bilan;
 use App\Models\Category;
 use App\Models\Element;
+use App\Models\Patient;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\CheckboxList;
@@ -67,8 +68,18 @@ class BilanResource extends Resource
                                             ->maxValue(120),
                                     ])
                             ])
-                            // ->columns(2)
+                            ->afterStateUpdated(function ($state, Set $set) {
+                                $patient = Patient::find($state);
+                                $set('patient_sexe', $patient->sexe);
+                            })
+                            ->live()
+
                             ->label('Patient'),
+                        TextInput::make('patient_sexe')
+                            ->disabled()
+                            ->dehydrated(false)
+                            
+                            ->label('Sexe'),
                         Select::make('prescripteur_id')
                             ->relationship('prescripteur', 'nom')
                             ->createOptionForm([
@@ -83,7 +94,7 @@ class BilanResource extends Resource
                             ->preload()
                             ->searchable(),
                     ])
-                    ->columns(2),
+                    ->columns(3),
                 Section::make('Résultats des analyses')->schema([
                     CheckboxList::make('categorie')
                         ->label(__('Catégories'))
@@ -137,6 +148,7 @@ class BilanResource extends Resource
                     ->label('Créé le')
                     ->dateTime('d/m/Y H:m:s')
                     ->sortable()
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()

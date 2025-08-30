@@ -202,7 +202,22 @@
                     @endphp
 
                     @foreach ($categories as $categoryName => $elements)
-                    <div class="section-title">{{ $categoryName }}</div>
+                    <div class="section-title">@if($categoryName == 'BetaHCG') &beta;HCG -  @else {{ $categoryName }} @endif
+                        @if($categoryName == 'BetaHCG')
+                            @foreach($elements as $element)
+                                @php
+                                $value = floatval($element->pivot->resultat ?? 0);
+                                @endphp
+                                @if(($element->nom == 'BetaHCG') && ($value < 2))
+                                    Négatif
+                                @elseif(($element->nom == 'BetaHCG') && ($value >= 2))
+                                    Positif
+                                @else
+                                @endif
+
+                            @endforeach
+                        @endif
+                    </div>
                     <table style="font-size: 12px;">
                         <tr>
                             <th width="30%">Paramètre</th>
@@ -217,20 +232,25 @@
                         $refMax = 0;
                         $arrow = getArrowAndRefs($element, $record->patient->age, $record->patient->sexe, $refMin, $refMax);
                         @endphp
+                        @if(($element->nom == 'BetaHCG') || ($element->pivot->resultat == 0))
+                        
+                        @else
                         <tr>
                             <td>
-                                @if ($element->nom === 'BetaHCG')
-                                    &beta;HCG
-                                @else
-                                    {{ $element->nom }}
-                                @endif
-
+                                {{$element->nom}}
                             </td>
                             <td>{{ $element->pivot->resultat }}</td>
                             <td>{{ $element->unite }}</td>
                             <td>{{ $refMin }} - {{ $refMax }}</td>
-                            <td><img src="{{ public_path('img/' . $arrow) }}" class="symbole" alt="État"></td>
+                            <td>
+                                @if($element->category == "BetaHCG")
+                                    {{$element->nom}}
+                                @else
+                                <img src="{{ public_path('img/' . $arrow) }}" class="symbole" alt="État">
+                                @endif
+                            </td>
                         </tr>
+                        @endif
                         @endforeach
                     </table>
                     @endforeach
