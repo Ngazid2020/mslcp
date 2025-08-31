@@ -68,6 +68,10 @@ class BilanResource extends Resource
                                             ->maxValue(120),
                                     ])
                             ])
+                            ->afterStateHydrated(function ($state, callable $set) {
+                                $patient = $state ? Patient::find($state) : null;
+                                $set('patient_sexe', $patient?->sexe ?? '');
+                            })
                             ->afterStateUpdated(function ($state, Set $set) {
                                 $patient = Patient::find($state);
                                 $set('patient_sexe', $patient->sexe);
@@ -78,8 +82,9 @@ class BilanResource extends Resource
                         TextInput::make('patient_sexe')
                             ->disabled()
                             ->dehydrated(false)
-                            
-                            ->label('Sexe'),
+                            ->reactive()
+                            ->label('Sexe')
+                            ->default(fn($record) => $record?->patient?->sexe ?? 'rien'),
                         Select::make('prescripteur_id')
                             ->relationship('prescripteur', 'nom')
                             ->createOptionForm([

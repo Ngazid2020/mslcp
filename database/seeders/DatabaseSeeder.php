@@ -264,7 +264,6 @@ class DatabaseSeeder extends Seeder
             'BILAN PROSTATIQUE',
             'FSH',
             'LH',
-            'Semaine D\'Amenorhée',
             'HBA1c',
             'BetaHCG',
             'OESTRADIOLE (E2)',
