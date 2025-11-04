@@ -96,6 +96,17 @@
             height: auto;
         }
 
+        .logo {
+            text-align: right;
+            margin-top: 0px;
+            padding-top: 0px;
+        }
+
+        .logo img {
+            width: 100px;
+            height: auto;
+        }
+
         .qrcode {
             margin-top: 30px;
             text-align: right;
@@ -139,22 +150,32 @@
 
 <body>
     <div class="container">
-        <header>
-            <h3 style="font-size: 16px;">MAISON DE SURVEILLANCE ET DE LUTTE CONTRE LE PALUDISME (MSLCP)</h3>
-            <h4 style="font-size: 14px">LABORATOIRE D’ANALYSES MÉDICALES</h4>
-            <p style="font-size: 12px">Dirigée par Mme Rahamatou SILAI – Parasitologue / MSc Biochimie<br>
-                Tél : +269 3330375 / 4735095 – Email : <a href="mailto:mslcp_silai@yahoo.fr">mslcp_silai@yahoo.fr</a></p>
-        </header>
+        <table>
+            <tr>
+                <td width="20%" class="logo" style="">
+                    <img src="{{ public_path('img/logo.png') }}" alt="Logo du médecin">
+                </td>
+                <td>
+                    <header>
+                        <h3 style="font-size: 16px;">MAISON DE SURVEILLANCE ET DE LUTTE CONTRE LE PALUDISME (MSLCP)</h3>
+                        <h4 style="font-size: 14px">LABORATOIRE D’ANALYSES MÉDICALES</h4>
+                        <p style="font-size: 12px">Dirigée par Mme Rahamatou SILAI – Parasitologue / MSc Biochimie<br>
+                            Tél : +269 3330375 / 4735095 – Email : <a href="mailto:mslcp_silai@yahoo.fr">mslcp_silai@yahoo.fr</a></p>
+                    </header>
+                </td>
+            </tr>
+        </table>
+
 
         <table class="info-table">
             <tr>
                 <td class="info" style="font-size: 12px;">
                     <strong>Cabinet Médical Privé</strong><br>
-                    Patient : {{$record->patient->nom ?? '__'}}, Âge : {{$record->patient->age}} , Sexe : {{$record->patient->sexe ?? '__'}}<br>
-                    Lieu : {{$record->patient->lieu_naissance ?? '__'}}, Résidence : {{$record->patient->domicile ?? '__'}}<br>
-                    Préscripteur : Dr {{$record->prescripteur->nom ?? '__'}}<br><br>
-                    <strong>Numéro de patient :</strong> {{$record->patient->id}}<br>
-                    <strong>Prélevé le :</strong> {{$record->created_at}}<br>
+                    <strong>Patient:</strong> {{$record->patient->nom ?? '__'}}, <strong>Âge:</strong> {{$record->patient->age}} , <strong>Sexe:</strong> {{$record->patient->sexe ?? '__'}}<br>
+                    <strong>Lieu:</strong> {{$record->patient->lieu_naissance ?? '__'}}, <strong>Domicile:</strong> {{$record->patient->domicile ?? '__'}}<br>
+                    <strong>Préscripteur:</strong> Dr {{$record->prescripteur->nom ?? '__'}}<br><br>
+                    <strong>Numéro de patient:</strong> {{$record->patient->id}}<br>
+                    <strong>Prélevé le:</strong> {{$record->created_at}}<br>
                     <!-- <strong>Édité le :</strong> 0-0-25 -->
                 </td>
                 <td class="qrcode-cell" style="text-align: right; vertical-align: top;">
@@ -202,25 +223,25 @@
                     @endphp
 
                     @foreach ($categories as $categoryName => $elements)
-                    <div class="section-title">@if($categoryName == 'BetaHCG') &beta;HCG -  @else {{ $categoryName }} @endif
+                    <div class="section-title">@if($categoryName == 'BetaHCG') &beta;HCG - @else {{ $categoryName }} @endif
                         @if($categoryName == 'BetaHCG')
-                            @foreach($elements as $element)
-                                @php
-                                $value = floatval($element->pivot->resultat ?? 0);
-                                @endphp
-                                @if(($element->nom == 'BetaHCG') && ($value < 2))
-                                    Négatif
-                                @elseif(($element->nom == 'BetaHCG') && ($value >= 2))
-                                    Positif
-                                @else
-                                @endif
+                        @foreach($elements as $element)
+                        @php
+                        $value = floatval($element->pivot->resultat ?? 0);
+                        @endphp
+                        @if(($element->nom == 'BetaHCG') && ($value < 2))
+                            Négatif
+                            @elseif(($element->nom == 'BetaHCG') && ($value >= 2))
+                            Positif
+                            @else
+                            @endif
 
                             @endforeach
-                        @endif
+                            @endif
                     </div>
                     <table style="font-size: 12px;">
                         <tr>
-                            <th width="30%">Paramètre</th>
+                            <th width="30%">Analyse</th>
                             <th>Valeur</th>
                             <th>Unité</th>
                             <th>Référence</th>
@@ -233,7 +254,7 @@
                         $arrow = getArrowAndRefs($element, $record->patient->age, $record->patient->sexe, $refMin, $refMax);
                         @endphp
                         @if(($element->nom == 'BetaHCG') || ($element->pivot->resultat == 0))
-                        
+
                         @else
                         <tr>
                             <td>
@@ -244,7 +265,7 @@
                             <td>{{ $refMin }} - {{ $refMax }}</td>
                             <td>
                                 @if($element->category == "BetaHCG")
-                                    {{$element->nom}}
+                                {{$element->nom}}
                                 @else
                                 <img src="{{ public_path('img/' . $arrow) }}" class="symbole" alt="État">
                                 @endif

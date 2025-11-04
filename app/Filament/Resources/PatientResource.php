@@ -28,6 +28,9 @@ class PatientResource extends Resource
         return $form
             ->schema([
                 Section::make('Informations du patient')->schema([
+                    Forms\Components\TextInput::make('numero')
+                        ->required()
+                        ->maxLength(255),
                     Forms\Components\TextInput::make('nom')
                         ->required()
                         ->maxLength(255),
@@ -59,6 +62,8 @@ class PatientResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('numero')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('nom')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('prenom')

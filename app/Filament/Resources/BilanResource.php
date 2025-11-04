@@ -55,10 +55,12 @@ class BilanResource extends Resource
                                     ->schema([
                                         TextInput::make('nom'),
                                         TextInput::make('prenom'),
+                                        TextInput::make('tel')
+                                            ->label('Téléphone'),
                                         Select::make('sexe')
                                             ->options([
-                                                'Masculin' => 'Masculin',
-                                                'Féminin' => 'Féminin'
+                                                'M' => 'Masculin',
+                                                'F' => 'Féminin'
                                             ]),
                                         TextInput::make('domicile'),
                                         TextInput::make('lieu_naissance'),
@@ -71,20 +73,28 @@ class BilanResource extends Resource
                             ->afterStateHydrated(function ($state, callable $set) {
                                 $patient = $state ? Patient::find($state) : null;
                                 $set('patient_sexe', $patient?->sexe ?? '');
+                                $set('patient_prenom', $patient?->prenom ?? '');
                             })
                             ->afterStateUpdated(function ($state, Set $set) {
                                 $patient = Patient::find($state);
                                 $set('patient_sexe', $patient->sexe);
+                                $set('patient_prenom', $patient->prenom);
                             })
                             ->live()
 
                             ->label('Patient'),
+                        TextInput::make('patient_prenom')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->reactive()
+                            ->label('Prénom')
+                            ->default(fn($record) => $record?->patient?->prenom ?? ''),
                         TextInput::make('patient_sexe')
                             ->disabled()
                             ->dehydrated(false)
                             ->reactive()
                             ->label('Sexe')
-                            ->default(fn($record) => $record?->patient?->sexe ?? 'rien'),
+                            ->default(fn($record) => $record?->patient?->sexe ?? ''),
                         Select::make('prescripteur_id')
                             ->relationship('prescripteur', 'nom')
                             ->createOptionForm([
@@ -99,7 +109,7 @@ class BilanResource extends Resource
                             ->preload()
                             ->searchable(),
                     ])
-                    ->columns(3),
+                    ->columns(4),
                 Section::make('Résultats des analyses')->schema([
                     CheckboxList::make('categorie')
                         ->label(__('Catégories'))

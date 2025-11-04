@@ -17,6 +17,7 @@ class PatientFactory extends Factory
     public function definition(): array
     {
         return [
+            'numero' => $this->faker->unique()->numerify('P####'),
             'nom' => $this->faker->name(),
             'prenom' => $this->faker->firstName(),
             'Age' => $this->faker->numberBetween(1, 100),

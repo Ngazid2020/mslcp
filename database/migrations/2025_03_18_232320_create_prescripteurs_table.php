@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('prescripteurs', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
-            $table->string('adresse');
-            $table->string('tel');
-            $table->string('email')->unique();
+            $table->string('adresse')->nullable();
+            $table->string('tel')->nullable();
+            $table->string('email')->unique()->nullable();
             $table->timestamps();
         });
     }
