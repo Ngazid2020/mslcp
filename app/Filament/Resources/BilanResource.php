@@ -155,8 +155,10 @@ class BilanResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('ref')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('patient.nom')
-                    ->numeric()
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')

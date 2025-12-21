@@ -36,4 +36,16 @@ class Bilan extends Model
             ->withPivot('resultat',)
             ->withTimestamps();
     }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($bilan) {
+            $year = date('Y');
+            $mounth = date('m');
+            $count = Bilan::whereYear('created_at', $year)->count() + 1;
+            $bilan->ref = 'LAB-' . $year . '-' .$mounth.'-'. str_pad($count, 3, '0', STR_PAD_LEFT);
+        });
+    }
 }
