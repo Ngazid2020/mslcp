@@ -257,30 +257,30 @@ class DatabaseSeeder extends Seeder
             'force-delete-any Patient',
         ]);
 
-        $categories = [
-            'NUMERATION GLOBULAIRE',
-            'FORMULE SANGUINE',
-            'NUMERATION DES PLAQUETTES',
-            'BILAN PROSTATIQUE',
-            'FSH',
-            'LH',
-            'HBA1c',
-            'BetaHCG',
-            'OESTRADIOLE (E2)',
-            'PRL',
-        ];
-        foreach ($categories as $category) {
-            $macategory = Category::factory()->create([
-                'name' => $category,
-            ]);
+        // $categories = [
+        //     'NUMERATION GLOBULAIRE',
+        //     'FORMULE SANGUINE',
+        //     'NUMERATION DES PLAQUETTES',
+        //     'BILAN PROSTATIQUE',
+        //     'FSH',
+        //     'LH',
+        //     'HBA1c',
+        //     'BetaHCG',
+        //     'OESTRADIOLE (E2)',
+        //     'PRL',
+        // ];
+        // foreach ($categories as $category) {
+        //     $macategory = Category::factory()->create([
+        //         'name' => $category,
+        //     ]);
 
-            $macategory->save();
-            $elements = [];
+        //     $macategory->save();
+        //     $elements = [];
 
             
-        }
+        // }
 
 
-        Patient::factory(50)->create();
+        // Patient::factory(50)->create();
     }
 }
