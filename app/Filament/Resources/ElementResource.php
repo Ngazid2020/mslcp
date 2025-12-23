@@ -9,9 +9,14 @@ use App\Models\Element;
 use Filament\Actions\Exports\Models\Export;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ExportAction;
@@ -50,6 +55,13 @@ class ElementResource extends Resource
                                 Forms\Components\TextInput::make('name')
                                     ->required()
                                     ->maxLength(255),
+                            ]),
+                            Radio::make('type_valeur')
+                            ->options([
+                                'positif/negatif' => 'Positif/Négatif',
+                                'positif/numerique' => 'Positif ou Numérique',
+                                'negatif/numerique' => 'Négatif ou Numérique',
+                                'numerique' => 'Numérique',
                             ]),
                     ])
 
@@ -106,6 +118,7 @@ class ElementResource extends Resource
                                 ->maxLength(255)
                                 ->default(null),
                         ])->columnSpan(1),
+                        
                     ])
                 ])
 
@@ -122,6 +135,9 @@ class ElementResource extends Resource
                 Tables\Columns\TextColumn::make('unite')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('category.name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('type_valeur')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')

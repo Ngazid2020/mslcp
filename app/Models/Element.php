@@ -28,6 +28,7 @@ class Element extends Model
         'norme_nourisson',
         'unite',
         'category_id',
+        'type_valeur',
     ];
 
     public function category()
