@@ -19,6 +19,9 @@ class CategoryAnalyseResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Bactériologie';
+    // protected static ?int $navigationSort = 1;
+    protected static ?string $navigationLabel = 'Catégories';
+    protected static ?int $navigationGroupSort = 2;
 
     public static function form(Form $form): Form
     {
