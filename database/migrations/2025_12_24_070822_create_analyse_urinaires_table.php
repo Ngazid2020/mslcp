@@ -14,8 +14,7 @@ return new class extends Migration
     {
         Schema::create('analyse_urinaires', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');            
-            $table->string('resultat')->nullable();
+            $table->string('nom');
 
             $table->foreignIdFor(CategoryAnalyse::class)->constrained()->cascadeOnDelete();
             $table->timestamps();
