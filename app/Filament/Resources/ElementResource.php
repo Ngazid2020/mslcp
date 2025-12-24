@@ -12,8 +12,6 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -56,13 +54,17 @@ class ElementResource extends Resource
                                     ->required()
                                     ->maxLength(255),
                             ]),
+                        Section::make()->schema([
                             Radio::make('type_valeur')
-                            ->options([
-                                'positif/negatif' => 'Positif/Négatif',
-                                'positif/numerique' => 'Positif ou Numérique',
-                                'negatif/numerique' => 'Négatif ou Numérique',
-                                'numerique' => 'Numérique',
-                            ]),
+                                ->options([
+                                    'positif/negatif' => 'Positif/Négatif',
+                                    'positif/numerique' => 'Positif ou Numérique',
+                                    'negatif/numerique' => 'Négatif ou Numérique',
+                                    'numerique' => 'Numérique',
+                                ])
+                                ->inline(),
+                        ]),
+
                     ])
 
                 ])->columns(3),
@@ -118,7 +120,7 @@ class ElementResource extends Resource
                                 ->maxLength(255)
                                 ->default(null),
                         ])->columnSpan(1),
-                        
+
                     ])
                 ])
 
@@ -134,9 +136,10 @@ class ElementResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('unite')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('category.name')
-                    ->sortable()
-                    ->searchable(),
+                Tables\Columns\SelectColumn::make('category_id')
+                    ->options(function () {
+                        return \App\Models\Category::all()->pluck('name', 'id')->toArray();
+                    }),
                 Tables\Columns\TextColumn::make('type_valeur')
                     ->sortable()
                     ->searchable(),
