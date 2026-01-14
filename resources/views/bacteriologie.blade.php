@@ -49,12 +49,8 @@
             font-size: 14px;
         }
         .section-title-secondary {
-            background-color: #d3d3d3;
             font-weight: bold;
             text-decoration: underline;
-            padding: 6px;
-            margin-top: 12px;
-            border: 1px solid #000;
             font-size: 12px;
         }
 
@@ -66,7 +62,7 @@
 
         .results-table td {
             border: 1px solid #000;
-            padding: 7px;
+            /* padding: 7px; */
         }
 
         .parameter-name {
@@ -77,7 +73,13 @@
         .result-value {
             width: 40%;
             text-align: center;
-            height: 50px;
+            height: 40px;
+        }
+
+        .result-value-petit {
+            width: 40%;
+            text-align: center;
+            /* height: 20px; */
         }
 
         .ref-range {
@@ -123,16 +125,16 @@
     <div class="patient-info">
         <table>
             <tr>
-                <td><strong>Nom:</strong> {{ $patient->nom ?? '' }}</td>
-                <td><strong>Prénom:</strong> {{ $patient->prenom ?? '' }}</td>
+                <td><strong>Nom:</strong> {{ $record->patient->nom ?? '' }}</td>
+                <td><strong>Prénom:</strong> {{ $record->patient->prenom ?? '' }}</td>
             </tr>
             <tr>
-                <td><strong>Téléphone:</strong> {{ $patient->telephone ?? '' }}</td>
-                <td><strong>Age:</strong> {{ $patient->age ?? '' }}</td>
+                <td><strong>Téléphone:</strong> {{ $record->patient->telephone ?? '' }}</td>
+                <td><strong>Age:</strong> {{ $record->patient->age ?? '' }}</td>
             </tr>
             <tr>
-                <td><strong>Domicile:</strong> {{ $patient->domicile ?? '' }}</td>
-                <td><strong>Prescripteur:</strong> {{ $patient->prescripteur ?? '' }}</td>
+                <td><strong>Domicile:</strong> {{ $record->patient->domicile ?? '' }}</td>
+                <td><strong>Prescripteur:</strong> {{ $record->prescripteur->nom ?? '' }}</td>
             </tr>
         </table>
     </div>
@@ -142,20 +144,20 @@
     <div class="patient-info">
         <table>
             <tr>
-                <td><strong>Urobilinogène:</strong> {{ $resultats->urobilinogene ?? '' }} mg/L</td>
-                <td><strong>Albumine:</strong> {{ $resultats->albumine ?? '' }}</td>
-                <td><strong>Sucre:</strong> {{ $resultats->sucre ?? '' }}</td>
-                <td><strong>Acétone:</strong> {{ $resultats->acetone ?? '' }}</td>
+                <td><strong>Urobilinogène:</strong> {{ $record->urobilinogene ?? '' }} mg/L</td>
+                <td><strong>Albumine:</strong> {{ $record->albumine ?? '' }}</td>
+                <td><strong>Sucre:</strong> {{ $record->sucre ?? '' }}</td>
+                <td><strong>Acétone:</strong> {{ $record->acetone ?? '' }}</td>
             </tr>
             <tr>
-                <td><strong>pH:</strong> {{ $resultats->ph ?? '' }}</td>
-                <td><strong>Bilirubine:</strong> {{ $resultats->bilirubine ?? '' }}</td>
-                <td><strong>Densité:</strong> {{ $resultats->densite ?? '' }}</td>
-                <td><strong>Sang:</strong> {{ $resultats->sang ?? '' }}</td>
+                <td><strong>pH:</strong> {{ $record->ph ?? '' }}</td>
+                <td><strong>Bilirubine:</strong> {{ $record->bilirubine ?? '' }}</td>
+                <td><strong>Densité:</strong> {{ $record->densite ?? '' }}</td>
+                <td><strong>Sang:</strong> {{ $record->sang ?? '' }}</td>
             </tr>
             <tr>
-                <td><strong>Nitrite:</strong> {{ $resultats->ntrite ?? '' }}</td>
-                <td><strong>Leucocytes:</strong> {{ $resultats->leucocytes ?? '' }}</td>
+                <td><strong>Nitrite:</strong> {{ $record->ntrite ?? '' }}</td>
+                <td><strong>Leucocytes:</strong> {{ $record->leucocytes ?? '' }}</td>
             </tr>
         </table>
     </div>
@@ -164,27 +166,54 @@
     <!-- ECBU -->
     <div class="section-title">EXAMEN CYTOBACTERIOLOGIQUE DES URINES (ECBU)</div>
     <table class="results-table">
-        <div class="section-title-secondary">Macroscopie</div>
+        <tr>
+            <td colspan="2"><div class="section-title-secondary">E. macroscopique</div></td>
+        </tr>
         <tr>
             <td class="parameter-name">Aspect des urines</td>
-            <td class="result-value">{{ $resultats->macroscopie ?? '' }}</td>
+            <td class="result-value-petit">{{ $record->aspect_urines ?? '' }}</td>
         </tr>
+        
+        <tr><td colspan="2"><div class="section-title-secondary">E. Microscopique</div></td></tr>
         <tr>
             <td class="parameter-name">Cellules épithéliales</td>
-            <td class="result-value">{{ $resultats->cellules_epitheliales ?? '' }}</td>
+            <td class="result-value-petit">{{ $record->cellules_epitheliales ?? '' }}</td>
         </tr>
-        <div class="section-title-secondary">E. Microscopie</div>
+        <tr>
+            <td class="parameter-name">Leucocytes</td>
+            <td class="result-value-petit">{{ $record->leucocytes_micro ?? '' }}</td>
+        </tr>
+        <tr>
+            <td class="parameter-name">Hématies</td>
+            <td class="result-value-petit">{{ $record->hematies ?? '' }}</td>
+        </tr>
+        <tr>
+            <td class="parameter-name">Parasites</td>
+            <td class="result-value-petit">{{ $record->parasites ?? '' }}</td>
+        </tr>
+        <tr>
+            <td class="parameter-name">Eléments fongiques</td>
+            <td class="result-value-petit">{{ $record->elements_fongiques ?? '' }}</td>
+        </tr>
+        <tr>
+            <td class="parameter-name">Bacteries</td>
+            <td class="result-value-petit">{{ $record->bacteries ?? '' }}</td>
+        </tr>
+        <tr>
+            <td class="parameter-name">Cristaux</td>
+            <td class="result-value-petit">{{ $record->cristaux ?? '' }}</td>
+        </tr>
         <tr>
             <td class="parameter-name">Coloration de Gram</td>
-            <td class="result-value">{{ $resultats->coloration_gram ?? '' }}</td>
+            <td class="result-value">{{ $record->coloration_gram ?? '' }}</td>
         </tr>
         <tr>
             <td class="parameter-name">Culture</td>
-            <td class="result-value">{{ $resultats->culture ?? '' }}</td>
+            <td class="result-value">{{ $record->culture ?? '' }}</td>
         </tr>
         <tr>
             <td class="parameter-name">Conclusion</td>
-            <td class="result-value">{{ $resultats->conclusion ?? '' }}</td>
+            <td class="result-value">{{ $record->conclusion ?? '' }}</td>
         </tr>
     </table>
 

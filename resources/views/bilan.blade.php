@@ -20,6 +20,19 @@
             padding: 0;
         }
 
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 120px;
+            font-weight: bold;
+            opacity: 0.5;
+            color: rgba(0, 0, 0, 0.08);
+            pointer-events: none;
+            letter-spacing: 15px;
+        }
+
         .container {
             max-width: 900px;
             margin: auto;
@@ -145,10 +158,12 @@
             width: 10px;
             /* height: 25px; */
         }
+
     </style>
 </head>
 
 <body>
+    <div class="watermark">MSLCP</div>
     <div class="container">
         <table>
             <tr>
@@ -189,11 +204,9 @@
         function getArrowAndRefs($element, $age, $sexe, &$refMin, &$refMax) {
         $value = floatval($element->pivot->resultat ?? 0);
 
-        if ($age < 5) {
-            $refMin=floatval($element->ref_inf_nour ?? 0);
+        if ($age < 5) { $refMin=floatval($element->ref_inf_nour ?? 0);
             $refMax = floatval($element->ref_sup_nour ?? 0);
-            } elseif ($age >= 5 && $age < 15) {
-                $refMin=floatval($element->ref_inf_enf ?? 0);
+            } elseif ($age >= 5 && $age < 15) { $refMin=floatval($element->ref_inf_enf ?? 0);
                 $refMax = floatval($element->ref_sup_enf ?? 0);
                 } else { // âge >= 15
                 if ($sexe == 'F') {
@@ -205,9 +218,7 @@
                 }
                 }
 
-                if ($value < $refMin) {
-                    return 'arrow-down.png' ;
-                    } elseif ($value> $refMax) {
+                if ($value < $refMin) { return 'arrow-down.png' ; } elseif ($value> $refMax) {
                     return 'arrow-up.png';
                     } else {
                     return 'check_ok.png';
@@ -229,9 +240,7 @@
                         @php
                         $value = floatval($element->pivot->resultat ?? 0);
                         @endphp
-                        @if(($element->nom == 'BetaHCG') && ($value < 2))
-                            Négatif
-                            @elseif(($element->nom == 'BetaHCG') && ($value >= 2))
+                        @if(($element->nom == 'BetaHCG') && ($value < 2)) Négatif @elseif(($element->nom == 'BetaHCG') && ($value >= 2))
                             Positif
                             @else
                             @endif
