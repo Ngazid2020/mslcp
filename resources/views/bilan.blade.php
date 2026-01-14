@@ -30,7 +30,7 @@
             opacity: 0.5;
             color: rgba(0, 0, 0, 0.08);
             pointer-events: none;
-            letter-spacing: 15px;
+            letter-spacing: 25px;
         }
 
         .container {

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ElementsResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -30,24 +31,9 @@ class ElementsRelationManager extends RelationManager
                 Select::make('category')
                     ->relationship('category', 'name')
                     ->disabled(),
-                TextInput::make('type_valeur'),
+                Hidden::make('type_valeur'),
                 TextInput::make('resultat')
                     ->default(fn($record) => $record?->type_valeur),
-
-
-
-                // Radio::make('type_valeur')
-                //     ->live()
-                //     ->options([
-                //         'positif/negatif' => 'Positif/Négatif',
-                //         'positif/numerique' => 'Positif ou Numérique',
-                //         'negatif/numerique' => 'Négatif ou Numérique',
-                //     ])
-                //     ->afterStateUpdated(function ($state, Set $set) {
-                //         // Réinitialise les sous-choix quand on change de mode
-                //         $set('sous_choix', null);
-                //         $set('valeur_numerique', null);
-                //     }),
 
                 // Radio secondaire : Positif/Négatif (s'affiche pour les 3 modes)
                 Radio::make('sous_choix')
@@ -93,7 +79,7 @@ class ElementsRelationManager extends RelationManager
                         }
                     }),
 
-                
+
 
                 // Champ caché qui stocke la valeur finale
                 TextInput::make('resultat')
