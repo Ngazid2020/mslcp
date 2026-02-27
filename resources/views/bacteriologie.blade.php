@@ -105,10 +105,24 @@
             margin-top: 40px;
             width: 80%;
         }
+
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 120px;
+            font-weight: bold;
+            opacity: 0.5;
+            color: rgba(0, 0, 0, 0.08);
+            pointer-events: none;
+            letter-spacing: 25px;
+        }
     </style>
 </head>
 
 <body>
+    <div class="watermark">MSLCP</div>
     <!-- EN-TÊTE -->
     <div class="header">
         <div class="lab-info">
