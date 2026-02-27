@@ -34,6 +34,8 @@ class BilanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-beaker';
     protected static ?string $navigationGroup = 'Bilans d\'analyses';
+    protected static ?string $navigationLabel = 'Bilans d\'analyse généraux';
+
     protected static ?int $navigationGroupSort = 2;
 
 
