@@ -24,6 +24,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -181,13 +182,27 @@ class BilanResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
 
-                Action::make('Télécharger')
+                ActionGroup::make([
+                    Action::make('bilan_general')
+                        ->label('Bilan général')
+                        ->icon('heroicon-o-document-text')
+                        ->url(fn($record) => route('pdf.bilan', $record->id))
+                        ->openUrlInNewTab()
+                        ->color(Color::Emerald),
+
+                    Action::make('bilan_hormonal')
+                        ->label('Bilan hormonal')
+                        ->icon('heroicon-o-beaker')
+                        ->url(fn($record) => route('pdf.hormonal', $record->id))
+                        ->openUrlInNewTab()
+                        ->color(Color::Violet),
+                ])
+                    ->label('Télécharger')
                     ->icon('heroicon-o-document-arrow-down')
-                    ->url(fn($record) => route('pdf.bilan', $record->id))
-                    ->openUrlInNewTab()
                     ->color(Color::Emerald)
+                    ->button()
                     ->visible(fn($record) => auth()->user()->can('download', $record)),
-            ])
+s            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

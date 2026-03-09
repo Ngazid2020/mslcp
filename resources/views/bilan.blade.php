@@ -158,7 +158,6 @@
             width: 10px;
             /* height: 25px; */
         }
-
     </style>
 </head>
 
@@ -241,13 +240,14 @@
                         $value = floatval($element->pivot->resultat ?? 0);
                         @endphp
                         @if(($element->nom == 'BetaHCG') && ($value < 2)) Négatif @elseif(($element->nom == 'BetaHCG') && ($value >= 2))
-                            Positif
+                            Positif - {{$value}}
                             @else
                             @endif
 
                             @endforeach
                             @endif
                     </div>
+                    
                     <table style="font-size: 12px;">
                         <tr>
                             <th width="30%">Analyse</th>

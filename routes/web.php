@@ -17,5 +17,8 @@ Route::get('/', function () {
 Route::get('/bilan/{record}/pdf', [BilanPdfController::class, 'generatePdf'])
     ->name('pdf.bilan');
 
+Route::get('/bilanhormonal/{record}/pdf', [BilanPdfController::class, 'generateHormonalPdf'])
+    ->name('pdf.hormonal');
+
 Route::get('/bilanurinaire/{record}/pdf', [BacteriologiePdfController::class, 'generatePdf'])
     ->name('pdf.bilanurinaire');
