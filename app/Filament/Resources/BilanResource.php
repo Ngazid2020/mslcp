@@ -202,7 +202,7 @@ class BilanResource extends Resource
                     ->color(Color::Emerald)
                     ->button()
                     ->visible(fn($record) => auth()->user()->can('download', $record)),
-s            ])
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
