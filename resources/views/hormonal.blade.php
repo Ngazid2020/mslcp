@@ -486,13 +486,13 @@
                 {{ $element->pivot->resultat ?? '' }}
                 @endif
 
-                @if($record->patient->sexe == 'F')
-
+                
                 <span style="text-align: right; font-weight:semi-bold;">{{ $element->pivot->resultat ?? '' }}</span>
             </td>
             <td>unite</td>
             <td>ref</td>
         </tr>
+        @if($record->patient->sexe == 'F')
         <tr>
             <td colspan="4">
                 <ul class="sub-list">
@@ -525,13 +525,13 @@
                 {{ $element->pivot->resultat ?? '' }}
                 @endif
 
-                @if($record->patient->sexe == 'F')
-
+                
                 <span style="margin-left:40px; font-weight:semi-bold;">{{ $element->pivot->resultat ?? '' }}</span>
             </td>
             <td>{{$element->unite}}</td>
             <td>@if($record->patient->sexe == 'M') reg @endif</td>
         </tr>
+        @if($record->patient->sexe == 'F')
         <tr>
             <td colspan="4">
                 <ul class="sub-list">
@@ -564,6 +564,7 @@
                     <span class="inline-dots">{{ $element->pivot->resultat ?? '' }}</span>
                     <span class="vn">VN : [&lt; 2 mIU/ml] &nbsp; Rangé : [2 – 2×10<sup>6</sup> mUI/ml]</span>
                 </p>
+                @if($record->patient->sexe == 'F')
                 <p class="center bold" style="margin-bottom:6px; font-size:10px; text-decoration:underline; letter-spacing:0.5px;">
                     Semaines d'aménorrhée :
                 </p>
@@ -588,6 +589,7 @@
                         </td>
                     </tr>
                 </table>
+                @endif
             </td>
         </tr>
         @endif
@@ -615,6 +617,7 @@
         @endforeach
         @endif
         @endforeach
+
         {{-- ---- HBA1C ---- --}}
         @foreach($categories as $categoryName => $elements)
         @if($categoryName == 'HBA1c')
@@ -650,17 +653,13 @@
         <tr>
             <td>{{ $element->nom }}</td>
             <td style="text-align: right;">
-                @if($record->patient->sexe == 'M' || $record->patient->age < 15)
-                {{ $element->pivot->resultat ?? '' }}
-                @endif
-
-                @if($record->patient->sexe == 'F')
-
+                        
                 <span style="text-align: right; font-weight:semi-bold;">{{ $element->pivot->resultat ?? '' }}</span>
             </td>
             <td>unite</td>
             <td>ref</td>
         </tr>
+        @if($record->patient->sexe == 'F')
         <tr>
             <td colspan="4">
                 <ul class="sub-list">
@@ -687,22 +686,18 @@
         @endif
 
         @foreach($elements as $element)
-        @if($element->nom == 'PRL')
+        @if($element->nom == 'E2')
         <tr>
             <td>{{ $element->nom }}</td>
-            <td style="text-align: right;">
-                @if($record->patient->sexe == 'M')
-                {{ $element->pivot->resultat ?? '' }}
+            <td style="text-align: right;">              
             
-                @endif
-            
-                @if($record->patient->sexe == 'F')
-
+                
                 <span style="text-align: right; font-weight:semi-bold;">{{ $element->pivot->resultat ?? '' }}</span>
             </td>
             <td>unite</td>
             <td>ref</td>
         </tr>
+        @if($record->patient->sexe == 'F')
         <tr>
             <td colspan="4">
                 <ul class="sub-list">
