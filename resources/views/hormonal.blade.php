@@ -686,7 +686,7 @@
         @endif
 
         @foreach($elements as $element)
-        @if($element->nom == 'E2')
+        @if($element->nom == 'PRL')
         <tr>
             <td>{{ $element->nom }}</td>
             <td style="text-align: right;">              
@@ -701,10 +701,8 @@
         <tr>
             <td colspan="4">
                 <ul class="sub-list">
-                    <li>Pré-ménopausées folliculaire <span class="inline-dots">{{ $fsh_folliculaire ?? '' }}</span> <span class="vn">[4,46 – 12,43]</span></li>
+                    <li>Pré-ménopausées<span class="inline-dots">{{ $fsh_folliculaire ?? '' }}</span> <span class="vn">[4,46 – 12,43]</span></li>
                     <li>Post-ménopausées <span class="inline-dots">{{ $fsh_ovulation ?? '' }}</span> <span class="vn">[4,88 – 20,96]</span></li>
-                    <li>P. lutéale <span class="inline-dots">{{ $fsh_luteale ?? '' }}</span> <span class="vn">[1,96 – 7,70]</span></li>
-                    <li>P. ménopause <span class="inline-dots">{{ $fsh_menopause ?? '' }}</span> <span class="vn">[22,70 – 130]</span></li>
                 </ul>
             </td>
         </tr>

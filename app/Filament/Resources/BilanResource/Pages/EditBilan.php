@@ -20,7 +20,13 @@ class EditBilan extends EditRecord
                     ->openUrlInNewTab()
                     ->color(Color::Emerald)
                     ->visible(fn($record) => auth()->user()->can('download', $record)),
-            Actions\DeleteAction::make(),
+            Actions\Action::make('Télécharger Bilan hormonal')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->url(fn($record) => route('pdf.hormonal', $record->id))
+                    ->openUrlInNewTab()
+                    ->color(Color::Pink)
+                    ->visible(fn($record) => auth()->user()->can('download', $record)),
+            // Actions\DeleteAction::make(),
         ];
     }
 }
