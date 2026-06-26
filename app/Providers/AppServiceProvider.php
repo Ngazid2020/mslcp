@@ -2,12 +2,15 @@
 
 namespace App\Providers;
 
+use Filament\Support\Assets\Js;
+use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use App\Policies\RolePolicy;
 use App\Policies\PermissionPolicy;
-use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -29,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Permission::class, PermissionPolicy::class);
+
+        FilamentAsset::register([
+            Js::make('mslcp-app', Vite::asset('resources/js/app.js')),
+        ]);
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::GLOBAL_SEARCH_BEFORE,

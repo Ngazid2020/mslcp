@@ -1,0 +1,125 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+
+/* ══ MSLCP — THÈME MÉDICAL PROFESSIONNEL ══════════════════════════════════ */
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+
+/* Séparation douce sidebar / contenu */
+.fi-sidebar {
+    border-right: 1px solid rgb(15 23 42 / 0.07);
+    box-shadow: 2px 0 8px -2px rgb(0 0 0 / 0.05);
+}
+
+/* Bas de la zone logo */
+.fi-sidebar-header {
+    border-bottom: 1px solid rgb(15 23 42 / 0.06);
+}
+
+/* Item actif — filet bleu gauche + fond teinté */
+.fi-sidebar-item.fi-active .fi-sidebar-item-button {
+    background-color: rgb(0 113 188 / 0.09);
+    box-shadow: inset 3px 0 0 #0071bc;
+}
+
+.dark .fi-sidebar-item.fi-active .fi-sidebar-item-button {
+    background-color: rgb(0 113 188 / 0.20);
+    box-shadow: inset 3px 0 0 #38a2db;
+}
+
+/* Icône et libellé de l'item actif */
+.fi-sidebar-item.fi-active .fi-sidebar-item-icon {
+    color: #0071bc;
+}
+
+.dark .fi-sidebar-item.fi-active .fi-sidebar-item-icon {
+    color: #5ec0f0;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-label {
+    color: #005a96;
+    font-weight: 600;
+}
+
+.dark .fi-sidebar-item.fi-active .fi-sidebar-item-label {
+    color: #93d4f5;
+    font-weight: 600;
+}
+
+/* Labels de groupe — style registre médical */
+.fi-sidebar-group-label {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgb(156 163 175);
+}
+
+/* ── Barre de navigation supérieure ─────────────────────────────────────── */
+
+.fi-topbar {
+    border-bottom: 1px solid rgb(15 23 42 / 0.06);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.04);
+}
+
+/* ── Zone de contenu principal ───────────────────────────────────────────── */
+
+.fi-main {
+    background-color: #f1f5f9;
+}
+
+.dark .fi-main {
+    background-color: rgb(9 11 16);
+}
+
+/* ── Tableaux ────────────────────────────────────────────────────────────── */
+
+/* Conteneur — ring légèrement bleuté */
+.fi-ta-ctn {
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.05), 0 0 0 1px rgb(0 113 188 / 0.12);
+}
+
+/* Barre titre / recherche */
+.fi-ta-header {
+    border-bottom: 1px solid rgb(15 23 42 / 0.06);
+}
+
+/* En-tête colonnes — fond bleu glacé + séparateur accent */
+.fi-ta-table thead tr {
+    background-color: #edf5fb;
+    border-bottom: 2px solid #0071bc;
+}
+
+.dark .fi-ta-table thead tr {
+    background-color: rgb(0 113 188 / 0.10);
+    border-bottom: 2px solid rgb(0 113 188 / 0.50);
+}
+
+/* Labels colonnes — style rapport médical */
+.fi-ta-header-cell-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #1d4f6b;
+}
+
+.dark .fi-ta-header-cell-label {
+    color: #7ab8d4;
+}
+
+/* Hover lignes — teinte bleue au lieu du gris */
+.fi-ta-table tbody .fi-ta-row:hover {
+    background-color: rgb(0 113 188 / 0.04);
+}
+
+.dark .fi-ta-table tbody .fi-ta-row:hover {
+    background-color: rgb(0 113 188 / 0.10);
+}
+
+/* Ligne sélectionnée — filet bleu gauche (cohérence sidebar active) */
+.fi-ta-row [class*="before:bg-primary"] {
+    --tw-before-bg-opacity: 1;
+}
+

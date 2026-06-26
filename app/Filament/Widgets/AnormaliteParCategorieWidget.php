@@ -9,7 +9,7 @@ use Filament\Widgets\ChartWidget;
 class AnormaliteParCategorieWidget extends ChartWidget
 {
     protected static ?string $heading = 'Résultats hors-normes par catégorie';
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 5;
     protected static string $view = 'filament.widgets.clickable-chart-widget';
 
     public static function canView(): bool
@@ -134,6 +134,23 @@ class AnormaliteParCategorieWidget extends ChartWidget
     {
         return [
             'scales' => [
+                // 'x' => [
+                //     'ticks' => [
+                //         'maxRotation' => 0,
+                //         'autoSkip'    => false,
+                //         'font'        => ['size' => 11],
+                //         // Sépare "Catégorie (n)" en deux lignes : ["Catégorie", "(n)"]
+                //         'callback'    => 'function(value) {
+                //             var lbl = this.getLabelForValue(value);
+                //             var m = lbl.match(/^(.*?)\s*(\(\d+\))$/);
+                //             if (m) return [m[1], m[2]];
+                //             var words = lbl.split(" ");
+                //             if (words.length <= 1 || lbl.length <= 14) return lbl;
+                //             var mid = Math.ceil(words.length / 2);
+                //             return [words.slice(0, mid).join(" "), words.slice(mid).join(" ")];
+                //         }',
+                //     ],
+                // ],
                 'y' => [
                     'min' => 0,
                     'max' => 100,

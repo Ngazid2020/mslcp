@@ -9,9 +9,9 @@ use Filament\Widgets\ChartWidget;
 class TopAnormaliesWidget extends ChartWidget
 {
     protected static ?string $heading   = 'Top 10 anomalies';
-    protected static ?int    $sort      = 6;
+    protected static ?int    $sort      = 4;
     protected static string  $view      = 'filament.widgets.clickable-chart-widget';
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 1;
 
     public static function canView(): bool
     {
@@ -143,7 +143,8 @@ class TopAnormaliesWidget extends ChartWidget
     protected function getOptions(): array
     {
         return [
-            'indexAxis' => 'y',
+            'indexAxis'   => 'y',
+            'aspectRatio' => 1.8,
             'plugins'   => [
                 'legend' => ['display' => false],
             ],

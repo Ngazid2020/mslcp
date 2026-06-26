@@ -33,8 +33,9 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('img/logo.png'))
             ->brandName('MSLCP')
             ->brandLogoHeight('40px')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->colors([
-                'primary' => Color::Sky,
+                'primary' => Color::hex('#0071bc'),
                 'secondary' => Color::Indigo,
             ])            
             // ->sidebarCollapsibleOnDesktop()

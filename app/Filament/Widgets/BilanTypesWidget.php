@@ -10,6 +10,7 @@ class BilanTypesWidget extends ChartWidget
 {
     protected static ?string $heading = 'Répartition par type';
     protected static ?int $sort = 3;
+    protected int | string | array $columnSpan = 1;
     protected static string $view = 'filament.widgets.clickable-chart-widget';
 
     public static function canView(): bool
@@ -25,19 +26,6 @@ class BilanTypesWidget extends ChartWidget
             'annee' => 'Cette année',
             'tout'  => 'Tout',
         ];
-    }
-
-    public function getHeading(): string
-    {
-        $labels = [
-            'mois'  => 'Ce mois',
-            'trim'  => 'Ce trimestre',
-            'annee' => 'Cette année',
-            'tout'  => 'Tout',
-        ];
-        $filter = $this->filter ?? 'annee';
-
-        return 'Répartition par type — ' . ($labels[$filter] ?? $filter);
     }
 
     protected function getData(): array
@@ -77,6 +65,19 @@ class BilanTypesWidget extends ChartWidget
     protected function getType(): string
     {
         return 'doughnut';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'aspectRatio' => 1.8,
+            'plugins' => [
+                'legend' => [
+                    'position' => 'right',
+                    'labels'   => ['boxWidth' => 12, 'padding' => 14],
+                ],
+            ],
+        ];
     }
 
     public function handleChartClick(int $index, int $datasetIndex, string $label): void

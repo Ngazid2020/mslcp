@@ -5,25 +5,35 @@
         <x-slot name="heading">Filtres</x-slot>
 
         <div class="flex flex-wrap gap-6 items-end">
-            <div class="flex flex-col gap-1 min-w-[200px]">
+            <div class="flex flex-col gap-2 min-w-[240px]">
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Maladie</label>
-                <select wire:model.live="maladie_id"
-                        class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-primary-500">
-                    <option value="">— Toutes les maladies —</option>
-                    @foreach($this->getMaladies() as $id => $nom)
-                        <option value="{{ $id }}">{{ $nom }}</option>
-                    @endforeach
-                </select>
+                <div class="relative">
+                    <select wire:model.live="maladie_id"
+                            class="w-full appearance-none rounded-lg border border-gray-300 dark:border-white/20 bg-white dark:bg-white/5 text-gray-900 dark:text-white pl-4 pr-10 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="">— Toutes les maladies —</option>
+                        @foreach($this->getMaladies() as $id => $nom)
+                            <option value="{{ $id }}">{{ $nom }}</option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                    </div>
+                </div>
             </div>
 
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-2 min-w-[120px]">
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Année</label>
-                <select wire:model.live="annee"
-                        class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-primary-500">
-                    @foreach($this->getYears() as $y => $label)
-                        <option value="{{ $y }}">{{ $label }}</option>
-                    @endforeach
-                </select>
+                <div class="relative">
+                    <select wire:model.live="annee"
+                            class="w-full appearance-none rounded-lg border border-gray-300 dark:border-white/20 bg-white dark:bg-white/5 text-gray-900 dark:text-white pl-4 pr-10 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        @foreach($this->getYears() as $y => $label)
+                            <option value="{{ $y }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                    </div>
+                </div>
             </div>
         </div>
     </x-filament::section>

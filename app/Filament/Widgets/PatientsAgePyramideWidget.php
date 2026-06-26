@@ -10,7 +10,7 @@ use Filament\Widgets\ChartWidget;
 class PatientsAgePyramideWidget extends ChartWidget
 {
     protected static ?string $heading   = 'Profil démographique';
-    protected static ?int    $sort      = 5;
+    protected static ?int    $sort      = 6;
     protected static string  $view      = 'filament.widgets.clickable-chart-widget';
     protected int|string|array $columnSpan = 'full';
 

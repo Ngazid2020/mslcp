@@ -43,6 +43,8 @@
                 @endif
                 x-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('chart', 'filament/widgets') }}"
                 wire:ignore
+                data-chart-clickable="true"
+                x-on:chart-click="$wire.handleChartClick($event.detail.index, $event.detail.datasetIndex, $event.detail.label)"
                 x-data="chart({
                             cachedData: @js($this->getCachedData()),
                             options: @js($this->getOptions()),
@@ -111,42 +113,3 @@
     </x-filament::section>
 </x-filament-widgets::widget>
 
-@script
-<script>
-    const canvas = $wire.$el.querySelector('canvas');
-    if (!canvas) return;
-
-    canvas.addEventListener('click', function (event) {
-        const wrapper = canvas.closest('[x-data]');
-        if (!wrapper) return;
-
-        const alpineData = Alpine.$data(wrapper);
-        if (!alpineData || typeof alpineData.getChart !== 'function') return;
-
-        const chart = alpineData.getChart();
-        if (!chart) return;
-
-        const points = chart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true);
-        if (!points.length) return;
-
-        const { index, datasetIndex } = points[0];
-        const label = String(chart.data.labels?.[index] ?? '');
-
-        $wire.call('handleChartClick', index, datasetIndex, label);
-    });
-
-    canvas.addEventListener('mousemove', function (event) {
-        const wrapper = canvas.closest('[x-data]');
-        if (!wrapper) return;
-
-        const alpineData = Alpine.$data(wrapper);
-        if (!alpineData || typeof alpineData.getChart !== 'function') return;
-
-        const chart = alpineData.getChart();
-        if (!chart) return;
-
-        const points = chart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true);
-        canvas.style.cursor = points.length ? 'pointer' : '';
-    });
-</script>
-@endscript
