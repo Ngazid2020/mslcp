@@ -8,6 +8,7 @@ use App\Filament\Resources\ElementsResource\RelationManagers\ElementsRelationMan
 use App\Models\Bilan;
 use App\Models\Category;
 use App\Models\Element;
+use App\Models\Maladie;
 use App\Models\Patient;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
@@ -50,6 +51,15 @@ class BilanResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('patient_id')
                             ->relationship('patient', 'nom')
+                            ->getOptionLabelFromRecordUsing(fn (Patient $record) => trim($record->prenom . ' ' . $record->nom))
+                            ->getSearchResultsUsing(fn (string $search) => Patient::query()
+                                ->where('nom', 'like', "%{$search}%")
+                                ->orWhere('prenom', 'like', "%{$search}%")
+                                ->orderBy('nom')
+                                ->limit(50)
+                                ->get()
+                                ->mapWithKeys(fn ($p) => [$p->id => trim($p->prenom . ' ' . $p->nom)])
+                            )
                             ->required()
                             ->searchable()
                             ->preload()
@@ -86,12 +96,12 @@ class BilanResource extends Resource
                             ->live()
 
                             ->label('Patient'),
-                        TextInput::make('patient_prenom')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->reactive()
-                            ->label('Prénom')
-                            ->default(fn($record) => $record?->patient?->prenom ?? ''),
+                        // TextInput::make('patient_prenom')
+                        //     ->disabled()
+                        //     ->dehydrated(false)
+                        //     ->reactive()
+                        //     ->label('Prénom')
+                        //     ->default(fn($record) => $record?->patient?->prenom ?? ''),
                         TextInput::make('patient_sexe')
                             ->disabled()
                             ->dehydrated(false)
@@ -112,7 +122,17 @@ class BilanResource extends Resource
                             ->preload()
                             ->searchable(),
                     ])
-                    ->columns(4),
+                    ->columns(3),
+                Section::make('Maladies détectées')
+                    ->schema([
+                        CheckboxList::make('maladies')
+                            ->relationship('maladies', 'nom')
+                            ->options(fn () => Maladie::query()->where('actif', true)->orderBy('nom')->pluck('nom', 'id'))
+                            ->columns(3)
+                            ->columnSpanFull()
+                            ->helperText('Cocher les pathologies diagnostiquées lors de ce bilan.'),
+                    ])
+                    ->columns(1),
                 Section::make('Résultats des analyses')->schema([
                     CheckboxList::make('categorie')
                         ->label(__('Catégories'))
@@ -162,7 +182,14 @@ class BilanResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('patient.nom')
-                    ->searchable()
+                    ->label('Patient')
+                    ->formatStateUsing(fn ($state, $record) => trim($record->patient?->prenom . ' ' . $record->patient?->nom))
+                    ->searchable(query: fn (Builder $query, string $search) =>
+                        $query->whereHas('patient', fn ($q) =>
+                            $q->where('nom', 'like', "%{$search}%")
+                              ->orWhere('prenom', 'like', "%{$search}%")
+                        )
+                    )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Créé le')

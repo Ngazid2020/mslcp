@@ -2,31 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Models\Bilan; // Ou ton modèle spécifique
 use App\Models\BilanUrinaire;
+use Barryvdh\DomPDF\Facade\Pdf;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class BacteriologiePdfController extends Controller
 {
-    public function generatePdf($recordId)
+    public function generatePdf(int $recordId): StreamedResponse
     {
-        $record = BilanUrinaire::findOrFail($recordId);
-        $meCard = "MECARD:N:SILAI,RAHAMATOU;TEL:+2693330375;TEL:+2694735095;EMAIL:mslcp_silai@yahoo.fr;ENTREPRISE:MSLCP;TITLE:Parasitologue/MSc Biochimie;;";
-        $qrData = json_encode([
-            'id' => $record->id,
-            'nom' => 'Mme RAHAMATOU SILAI',
-            'date' => $record->created_at->format('d/m/Y'),
-        ]);
-        // dump($record);
-        // die();
-        $qrcode = base64_encode(QrCode::format('png')->size(200)->errorCorrection('H')->generate($meCard));
-        // $qrcode = QrCode::size(250)->generate($vcard);
+        $record = BilanUrinaire::with(['patient', 'prescripteur'])->findOrFail($recordId);
 
-        $pdf = Pdf::loadView('bacteriologie', compact('record', 'qrcode'));
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'bilan_' . $record->nom . '.pdf');
+        abort_unless($record->patient, 422, 'Ce bilan urinaire ne possède pas de patient associé.');
+
+        try {
+            $c = config('mslcp.contact');
+            $mecard = sprintf(
+                'MECARD:N:%s,%s;TEL:%s;TEL:%s;EMAIL:%s;ENTREPRISE:%s;TITLE:%s;;',
+                $c['nom_famille'], $c['prenom'],
+                $c['tel1'], $c['tel2'],
+                $c['email'], $c['entreprise'], $c['titre'],
+            );
+
+            $qrcode = base64_encode(
+                QrCode::format('png')->size(200)->errorCorrection('H')->generate($mecard)
+            );
+
+            // output() génère le PDF dans le try/catch — évite un stream corrompu silencieux.
+            $output = Pdf::loadView('bacteriologie', compact('record', 'qrcode'))->output();
+
+            return response()->streamDownload(function () use ($output) {
+                echo $output;
+            }, 'bilan_urinaire_' . $record->id . '.pdf');
+        } catch (\Exception $e) {
+            report($e);
+            abort(500, 'Une erreur est survenue lors de la génération du PDF. Vérifiez que le bilan est complet.');
+        }
     }
 }

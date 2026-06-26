@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\BilanUrinaireResource\Pages;
-use App\Filament\Resources\BilanUrinaireResource\RelationManagers;
 use App\Models\BilanUrinaire;
 use App\Models\Patient;
 use Filament\Forms;
@@ -19,7 +18,6 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class BilanUrinaireResource extends Resource
 {
@@ -36,6 +34,15 @@ class BilanUrinaireResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('patient_id')
                             ->relationship('patient', 'nom')
+                            ->getOptionLabelFromRecordUsing(fn (Patient $record) => trim($record->prenom . ' ' . $record->nom))
+                            ->getSearchResultsUsing(fn (string $search) => Patient::query()
+                                ->where('nom', 'like', "%{$search}%")
+                                ->orWhere('prenom', 'like', "%{$search}%")
+                                ->orderBy('nom')
+                                ->limit(50)
+                                ->get()
+                                ->mapWithKeys(fn ($p) => [$p->id => trim($p->prenom . ' ' . $p->nom)])
+                            )
                             ->required()
                             ->searchable()
                             ->preload()
@@ -62,22 +69,14 @@ class BilanUrinaireResource extends Resource
                             ->afterStateHydrated(function ($state, callable $set) {
                                 $patient = $state ? Patient::find($state) : null;
                                 $set('patient_sexe', $patient?->sexe ?? '');
-                                $set('patient_prenom', $patient?->prenom ?? '');
                             })
                             ->afterStateUpdated(function ($state, Set $set) {
                                 $patient = Patient::find($state);
-                                $set('patient_sexe', $patient->sexe);
-                                $set('patient_prenom', $patient->prenom);
+                                $set('patient_sexe', $patient?->sexe ?? '');
                             })
                             ->live()
 
                             ->label('Patient'),
-                        TextInput::make('patient_prenom')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->reactive()
-                            ->label('Prénom')
-                            ->default(fn($record) => $record?->patient?->prenom ?? ''),
                         TextInput::make('patient_sexe')
                             ->disabled()
                             ->dehydrated(false)
@@ -98,7 +97,7 @@ class BilanUrinaireResource extends Resource
                             ->preload()
                             ->searchable(),
                     ])
-                    ->columns(4),
+                    ->columns(3),
                 Section::make('Biochimie urinaire')->schema([
                     Forms\Components\TextInput::make('urobilinogene')
                         ->maxLength(255)
@@ -181,6 +180,14 @@ class BilanUrinaireResource extends Resource
             ->columns([
                 
                 Tables\Columns\TextColumn::make('patient.nom')
+                    ->label('Patient')
+                    ->formatStateUsing(fn ($state, $record) => trim($record->patient?->prenom . ' ' . $record->patient?->nom))
+                    ->searchable(query: fn (Builder $query, string $search) =>
+                        $query->whereHas('patient', fn ($q) =>
+                            $q->where('nom', 'like', "%{$search}%")
+                              ->orWhere('prenom', 'like', "%{$search}%")
+                        )
+                    )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('prescripteur.nom')
                     ->numeric()

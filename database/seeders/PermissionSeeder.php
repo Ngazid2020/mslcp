@@ -23,6 +23,8 @@ class PermissionSeeder extends Seeder
             'force-delete Permission',
             'force-delete-any Permission',
             'download Bilan',
+            'view Statistiques',
+            'view Rapports',
 
             // ajoutez ici toutes vos autres permissions
         ];

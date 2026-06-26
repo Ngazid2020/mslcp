@@ -17,7 +17,10 @@ class PrescripteurFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nom' => 'Dr. ' . $this->faker->lastName(),
+            'adresse' => $this->faker->streetAddress(),
+            'tel' => $this->faker->phoneNumber(),
+            'email' => $this->faker->unique()->safeEmail(),
         ];
     }
 }

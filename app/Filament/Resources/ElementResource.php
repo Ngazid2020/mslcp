@@ -57,10 +57,11 @@ class ElementResource extends Resource
                         Section::make()->schema([
                             Radio::make('type_valeur')
                                 ->options([
-                                    'positif/negatif' => 'Positif/Négatif',
+                                    'numerique'         => 'Numérique',
+                                    'qualitatif'        => 'Qualitatif (négatif / + / ++ / +++)',
+                                    'positif/negatif'   => 'Positif / Négatif',
                                     'positif/numerique' => 'Positif ou Numérique',
                                     'negatif/numerique' => 'Négatif ou Numérique',
-                                    'numerique' => 'Numérique',
                                 ])
                                 ->inline(),
                         ]),

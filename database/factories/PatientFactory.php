@@ -18,12 +18,13 @@ class PatientFactory extends Factory
     {
         return [
             'numero' => $this->faker->unique()->numerify('P####'),
-            'nom' => $this->faker->name(),
+            'nom' => $this->faker->lastName(),
             'prenom' => $this->faker->firstName(),
-            'Age' => $this->faker->numberBetween(1, 100),
+            'age' => $this->faker->numberBetween(1, 90),
             'lieu_naissance' => $this->faker->city(),
-            'domicile' => $this->faker->address(),
+            'domicile' => $this->faker->streetAddress(),
             'sexe' => $this->faker->randomElement(['M', 'F']),
+            'tel' => $this->faker->phoneNumber(),
         ];
     }
 }

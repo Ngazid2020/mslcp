@@ -20,6 +20,11 @@ class ChartTest extends ApexChartWidget
      */
     protected static ?string $heading = 'ChartTest';
 
+    public static function canView(): bool
+    {
+        return false;
+    }
+
     /**
      * Chart options (series, labels, types, size, animations...)
      * https://apexcharts.com/docs/options

@@ -13,8 +13,6 @@ use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ElementsRelationManager extends RelationManager
 {
@@ -32,8 +30,24 @@ class ElementsRelationManager extends RelationManager
                     ->relationship('category', 'name')
                     ->disabled(),
                 Hidden::make('type_valeur'),
+
+                // Saisie numérique (ou texte libre) — masquée pour les éléments qualitatifs
                 TextInput::make('resultat')
-                    ->default(fn($record) => $record?->type_valeur),
+                    ->label('Résultat')
+                    ->hidden(fn(Get $get) => $get('type_valeur') === 'qualitatif'),
+
+                // Saisie qualitative : négatif / + / ++ / +++ / ++++
+                Select::make('resultat')
+                    ->label('Résultat')
+                    ->options([
+                        'négatif' => '— Négatif',
+                        '+'       => '+ (faible parasitémie)',
+                        '++'      => '++ (parasitémie modérée)',
+                        '+++'     => '+++ (forte parasitémie)',
+                        '++++'    => '++++ (très forte parasitémie)',
+                    ])
+                    ->hidden(fn(Get $get) => $get('type_valeur') !== 'qualitatif')
+                    ->live(),
 
                 // Radio secondaire : Positif/Négatif (s'affiche pour les 3 modes)
                 Radio::make('sous_choix')
@@ -94,8 +108,38 @@ class ElementsRelationManager extends RelationManager
             ->recordTitleAttribute('nom')
             ->columns([
                 Tables\Columns\TextColumn::make('nom'),
-                Tables\Columns\TextColumn::make('category.name'),
-                Tables\Columns\TextColumn::make('resultat'),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Catégorie'),
+                Tables\Columns\TextColumn::make('unite')
+                    ->label('Unité'),
+                Tables\Columns\TextColumn::make('resultat')
+                    ->badge()
+                    ->color(function ($record, $livewire) {
+                        $resultat = $record->pivot?->resultat;
+
+                        if ($resultat === null || $resultat === '') {
+                            return 'gray';
+                        }
+
+                        $patient = $livewire->getOwnerRecord()->patient;
+
+                        if (! $patient) {
+                            return 'gray';
+                        }
+
+                        // Pour les éléments qualitatifs : négatif = success, tout le reste = danger
+                        if ($record->type_valeur === 'qualitatif') {
+                            return $record->isResultOutOfRange($resultat, $patient) ? 'danger' : 'success';
+                        }
+
+                        if (! is_numeric($resultat)) {
+                            return 'gray';
+                        }
+
+                        return $record->isResultOutOfRange($resultat, $patient)
+                            ? 'danger'
+                            : 'success';
+                    }),
             ])
             ->filters([
                 //
