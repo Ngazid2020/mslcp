@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Bilan;
 use Filament\Notifications\Notification;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\Cache;
 
 class TopAnormaliesWidget extends ChartWidget
 {
@@ -38,10 +39,10 @@ class TopAnormaliesWidget extends ChartWidget
     {
         $months = (int) ($this->filter ?? 6);
 
-        $bilans = Bilan::query()
+        $bilans = Cache::remember("top_anomalies_{$months}", 300, fn () => Bilan::query()
             ->with(['patient', 'elements'])
             ->where('created_at', '>=', now()->subMonths($months))
-            ->get();
+            ->get());
 
         /** @var array<string, array{total: int, anomal: int}> $stats */
         $stats = [];

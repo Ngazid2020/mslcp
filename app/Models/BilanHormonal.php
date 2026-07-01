@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class BilanHormonal extends Bilan
 {
+    protected $table = 'bilans';
+
     protected static function booted(): void
     {
         static::addGlobalScope('hormonal', function (Builder $builder) {

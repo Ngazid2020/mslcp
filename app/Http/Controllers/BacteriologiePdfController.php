@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BilanUrinaire;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Gate;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -12,6 +13,8 @@ class BacteriologiePdfController extends Controller
     public function generatePdf(int $recordId): StreamedResponse
     {
         $record = BilanUrinaire::with(['patient', 'prescripteur'])->findOrFail($recordId);
+
+        Gate::authorize('download Bilan');
 
         abort_unless($record->patient, 422, 'Ce bilan urinaire ne possède pas de patient associé.');
 

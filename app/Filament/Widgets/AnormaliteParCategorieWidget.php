@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Bilan;
 use Filament\Notifications\Notification;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\Cache;
 
 class AnormaliteParCategorieWidget extends ChartWidget
 {
@@ -39,9 +40,10 @@ class AnormaliteParCategorieWidget extends ChartWidget
     {
         $months = (int) ($this->filter ?? 6);
 
-        $bilans = Bilan::query()->with(['patient', 'elements.category'])
+        $bilans = Cache::remember("anomalies_categorie_{$months}", 300, fn () => Bilan::query()
+            ->with(['patient', 'elements.category'])
             ->where('created_at', '>=', now()->subMonths($months))
-            ->get();
+            ->get());
 
         /** @var array<string, array{total: int, anomal: int}> $stats */
         $stats = [];

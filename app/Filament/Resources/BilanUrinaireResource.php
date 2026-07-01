@@ -84,14 +84,15 @@ class BilanUrinaireResource extends Resource
                             ->label('Sexe')
                             ->default(fn($record) => $record?->patient?->sexe ?? ''),
                         Select::make('prescripteur_id')
+                            ->label('Prescripteur')
                             ->relationship('prescripteur', 'nom')
                             ->createOptionForm([
                                 Grid::make(2)
                                     ->schema([
-                                        TextInput::make('nom'),
-                                        TextInput::make('adresse'),
-                                        TextInput::make('tel'),
-                                        TextInput::make('email'),
+                                        TextInput::make('nom')->label('Nom complet'),
+                                        TextInput::make('tel')->label('Téléphone'),
+                                        TextInput::make('email')->label('Email'),
+                                        TextInput::make('adresse')->label('Adresse'),
                                     ])
                             ])
                             ->preload()
@@ -100,15 +101,19 @@ class BilanUrinaireResource extends Resource
                     ->columns(3),
                 Section::make('Biochimie urinaire')->schema([
                     Forms\Components\TextInput::make('urobilinogene')
+                        ->label('Urobilinogène')
                         ->maxLength(255)
                         ->default(null),
                     Forms\Components\TextInput::make('albumine')
+                        ->label('Albumine')
                         ->maxLength(255)
                         ->default(null),
                     Forms\Components\TextInput::make('sucre')
+                        ->label('Sucre')
                         ->maxLength(255)
                         ->default(null),
                     Forms\Components\TextInput::make('acetone')
+                        ->label('Acétone')
                         ->maxLength(255)
                         ->default(null),
                     Forms\Components\TextInput::make('ph')
@@ -116,59 +121,74 @@ class BilanUrinaireResource extends Resource
                         ->maxLength(255)
                         ->default(null),
                     Forms\Components\TextInput::make('bilirubine')
+                        ->label('Bilirubine')
                         ->maxLength(255)
                         ->default(null),
                     Forms\Components\TextInput::make('densite')
+                        ->label('Densité')
                         ->maxLength(255)
                         ->default(null),
                     Forms\Components\TextInput::make('sang')
+                        ->label('Sang')
                         ->maxLength(255)
                         ->default(null),
                     Forms\Components\TextInput::make('nitrite')
+                        ->label('Nitrite')
                         ->maxLength(255)
                         ->default(null),
                     Forms\Components\TextInput::make('leucocytes')
+                        ->label('Leucocytes')
                         ->maxLength(255)
                         ->default(null),
                 ])->columns(5),
-                Section::make('Examen Cytobacteriologique Des Urines')->schema([
-                    Section::make('E.Microscopique')->schema([
+                Section::make('Examen Cytobactériologique des Urines')->schema([
+                    Section::make('Examen Microscopique')->schema([
                         Forms\Components\TextInput::make('aspect_urines')
+                            ->label('Aspect des urines')
                             ->maxLength(255)
                             ->default(null),
                     ]),
-                    Section::make('E.Macroscopique')->schema([
+                    Section::make('Examen Macroscopique')->columns(3)->schema([
                         Forms\Components\TextInput::make('cellules_epitheliales')
+                            ->label('Cellules épithéliales')
                             ->maxLength(255)
                             ->default(null),
                         Forms\Components\TextInput::make('leucocytes_micro')
+                            ->label('Leucocytes')
                             ->maxLength(255)
                             ->default(null),
                         Forms\Components\TextInput::make('hematies')
+                            ->label('Hématies')
                             ->maxLength(255)
                             ->default(null),
                         Forms\Components\TextInput::make('parasites')
+                            ->label('Parasites')
                             ->maxLength(255)
                             ->default(null),
                         Forms\Components\TextInput::make('elements_fongiques')
+                            ->label('Éléments fongiques')
                             ->maxLength(255)
                             ->default(null),
                         Forms\Components\TextInput::make('bacteries')
+                            ->label('Bactéries')
                             ->maxLength(255)
                             ->default(null),
                         Forms\Components\TextInput::make('cristaux')
+                            ->label('Cristaux')
                             ->maxLength(255)
                             ->default(null),
                     ]),
                 ]),
 
-                Section::make()->schema([
+                Section::make('Résultats microbiologiques')->schema([
                     Forms\Components\Textarea::make('coloration_gram')
-                    ->label('Coloration de Gram')
+                        ->label('Coloration de Gram')
                         ->columnSpanFull(),
                     Forms\Components\Textarea::make('culture')
+                        ->label('Culture')
                         ->columnSpanFull(),
                     Forms\Components\Textarea::make('conclusion')
+                        ->label('Conclusion')
                         ->columnSpanFull(),
                 ]),
             ]);
@@ -177,8 +197,8 @@ class BilanUrinaireResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with(['patient', 'prescripteur']))
             ->columns([
-                
                 Tables\Columns\TextColumn::make('patient.nom')
                     ->label('Patient')
                     ->formatStateUsing(fn ($state, $record) => trim($record->patient?->prenom . ' ' . $record->patient?->nom))
@@ -190,7 +210,7 @@ class BilanUrinaireResource extends Resource
                     )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('prescripteur.nom')
-                    ->numeric()
+                    ->label('Prescripteur')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

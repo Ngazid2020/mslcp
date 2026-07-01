@@ -6,6 +6,7 @@ use App\Models\Bilan;
 use App\Models\Patient;
 use Filament\Notifications\Notification;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\DB;
 
 class PatientsAgePyramideWidget extends ChartWidget
 {
@@ -47,27 +48,41 @@ class PatientsAgePyramideWidget extends ChartWidget
     {
         $filter = $this->filter ?? (string) now()->year;
 
-        if ($filter === 'tous') {
-            $patients = Patient::all();
-        } else {
+        $groups = ['0–4', '5–14', '15–24', '25–34', '35–44', '45–54', '55–64', '65+'];
+
+        $caseExpr = 'CASE
+            WHEN age BETWEEN 0 AND 4 THEN 0
+            WHEN age BETWEEN 5 AND 14 THEN 1
+            WHEN age BETWEEN 15 AND 24 THEN 2
+            WHEN age BETWEEN 25 AND 34 THEN 3
+            WHEN age BETWEEN 35 AND 44 THEN 4
+            WHEN age BETWEEN 45 AND 54 THEN 5
+            WHEN age BETWEEN 55 AND 64 THEN 6
+            ELSE 7 END';
+
+        $query = Patient::query()
+            ->selectRaw("sexe, ($caseExpr) as tranche_idx, COUNT(*) as n")
+            ->groupByRaw("sexe, tranche_idx");
+
+        if ($filter !== 'tous') {
             $patientIds = Bilan::query()
                 ->whereYear('created_at', '=', (int) $filter)
-                ->pluck('patient_id')
-                ->unique();
-
-            $patients = Patient::query()->whereIn('id', $patientIds)->get();
+                ->distinct()
+                ->pluck('patient_id');
+            $query->whereIn('id', $patientIds);
         }
 
-        $groups  = ['0–4', '5–14', '15–24', '25–34', '35–44', '45–54', '55–64', '65+'];
-        $bounds  = [[0,4],[5,14],[15,24],[25,34],[35,44],[45,54],[55,64],[65,130]];
+        $rows   = $query->get();
+        $hommes = array_fill(0, 8, 0);
+        $femmes = array_fill(0, 8, 0);
 
-        $hommes  = [];
-        $femmes  = [];
-
-        foreach ($bounds as [$min, $max]) {
-            $subset   = $patients->filter(fn($p) => $p->age >= $min && $p->age <= $max);
-            $hommes[] = $subset->where('sexe', 'M')->count();
-            $femmes[] = $subset->where('sexe', 'F')->count();
+        foreach ($rows as $row) {
+            $idx = (int) $row->tranche_idx;
+            if ($row->sexe === 'M') {
+                $hommes[$idx] = (int) $row->n;
+            } elseif ($row->sexe === 'F') {
+                $femmes[$idx] = (int) $row->n;
+            }
         }
 
         return [

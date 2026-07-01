@@ -42,14 +42,27 @@ class BilansParMois extends ChartWidget
 
     protected function getData(): array
     {
-        $year     = (int) ($this->filter ?? now()->year);
+        $year = (int) ($this->filter ?? now()->year);
+
+        $generalByMonth = Bilan::query()
+            ->selectRaw('MONTH(created_at) as m, COUNT(*) as n')
+            ->whereYear('created_at', $year)
+            ->groupBy('m')
+            ->pluck('n', 'm');
+
+        $urinaireByMonth = BilanUrinaire::query()
+            ->selectRaw('MONTH(created_at) as m, COUNT(*) as n')
+            ->whereYear('created_at', $year)
+            ->groupBy('m')
+            ->pluck('n', 'm');
+
         $general  = [];
         $urinaire = [];
         $labels   = [];
 
         for ($month = 1; $month <= 12; $month++) {
-            $general[]  = Bilan::query()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->count();
-            $urinaire[] = BilanUrinaire::query()->whereYear('created_at', '=', $year)->whereMonth('created_at', '=', $month)->count();
+            $general[]  = (int) ($generalByMonth[$month] ?? 0);
+            $urinaire[] = (int) ($urinaireByMonth[$month] ?? 0);
             $labels[]   = self::MONTHS_FR[$month - 1];
         }
 

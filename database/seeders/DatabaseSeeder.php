@@ -3,8 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Bilan;
+use App\Models\BilanHormonal;
+use App\Models\BilanUrinaire;
 use App\Models\Category;
 use App\Models\Element;
+use App\Models\Maladie;
 use App\Models\Patient;
 use App\Models\Prescripteur;
 use App\Models\User;
@@ -21,8 +24,9 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $userAdmin = User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
+            'name'      => 'Admin',
+            'email'     => 'admin@example.com',
+            'telephone' => '3310001',
         ]);
 
         $roleAdmin = Role::create(['name' => 'administrateur']);
@@ -32,12 +36,14 @@ class DatabaseSeeder extends Seeder
         $userAdmin->assignRole('administrateur');
 
         $userLaborantin = User::factory()->create([
-            'name' => 'labo1',
-            'email' => 'labo1@example.com',
+            'name'      => 'labo1',
+            'email'     => 'labo1@example.com',
+            'telephone' => '3310002',
         ]);
         $userReceptionniste = User::factory()->create([
-            'name' => 'receptionniste 1',
-            'email' => 'receptionniste1@example.com',
+            'name'      => 'receptionniste 1',
+            'email'     => 'receptionniste1@example.com',
+            'telephone' => '3310003',
         ]);
 
         $userLaborantin->assignRole('receptionniste');
@@ -349,6 +355,45 @@ class DatabaseSeeder extends Seeder
                         1
                     ),
                 ]);
+            }
+        }
+
+        // ── Bilans hormonaux de démo ──────────────────────────────────────────
+        $hormonalElements = Element::whereHas('category', fn ($q) => $q->whereIn('name', ['FSH', 'LH', 'PRL']))->get();
+
+        foreach ($patients->skip(5)->take(3) as $patient) {
+            $bilanH = BilanHormonal::create([
+                'patient_id'      => $patient->id,
+                'prescripteur_id' => $prescripteurs->random()->id,
+            ]);
+            foreach ($hormonalElements as $element) {
+                $bilanH->elements()->attach($element->id, [
+                    'resultat' => round(
+                        fake()->randomFloat(1, (float) ($element->ref_inf_h ?? 1), (float) ($element->ref_sup_h ?? 20)),
+                        1
+                    ),
+                ]);
+            }
+        }
+
+        // ── Bilans urinaires de démo ──────────────────────────────────────────
+        foreach ($patients->skip(8)->take(3) as $patient) {
+            BilanUrinaire::create([
+                'patient_id'      => $patient->id,
+                'prescripteur_id' => $prescripteurs->random()->id,
+                'aspect_urines'   => 'clair',
+                'ph'              => '6.5',
+                'densite'         => '1.020',
+                'leucocytes'      => 'négatif',
+                'bacteries'       => 'absence',
+            ]);
+        }
+
+        // ── Associations maladies → bilans ────────────────────────────────────
+        $maladies = Maladie::all();
+        if ($maladies->isNotEmpty()) {
+            foreach (Bilan::query()->take(3)->get() as $bilan) {
+                $bilan->maladies()->attach($maladies->random()->id);
             }
         }
     }

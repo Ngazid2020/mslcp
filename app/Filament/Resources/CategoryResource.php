@@ -4,16 +4,14 @@ namespace App\Filament\Resources;
 
 use App\Filament\Exports\CategoryExporter;
 use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CategoryResource extends Resource
 {
@@ -27,9 +25,13 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                Section::make("Catégorie d'analyse")
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label("Nom de la catégorie")
+                            ->required()
+                            ->maxLength(255),
+                    ]),
             ]);
     }
 

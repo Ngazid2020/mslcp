@@ -3,15 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PrescripteurResource\Pages;
-use App\Filament\Resources\PrescripteurResource\RelationManagers;
 use App\Models\Prescripteur;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PrescripteurResource extends Resource
 {
@@ -25,20 +23,26 @@ class PrescripteurResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nom')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('adresse')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('tel')
-                    ->tel()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
+                Section::make('Informations du prescripteur')
+                    ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('nom')
+                            ->label('Nom complet')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('tel')
+                            ->label('Téléphone')
+                            ->tel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('email')
+                            ->label('Email')
+                            ->email()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('adresse')
+                            ->label('Adresse')
+                            ->maxLength(255),
+                    ]),
             ]);
     }
 

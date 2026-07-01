@@ -47,10 +47,10 @@ class Bilan extends Model
         parent::boot();
 
         static::creating(function ($bilan) {
-            $year = date('Y');
-            $mounth = date('m');
+            $year  = date('Y');
+            $month = date('m');
             $count = Bilan::query()->whereYear('created_at', '=', $year)->count() + 1;
-            $bilan->ref = 'LAB-' . $year . '-' .$mounth.'-'. str_pad($count, 3, '0', STR_PAD_LEFT);
+            $bilan->ref = 'LAB-' . $year . '-' . $month . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
         });
     }
 }

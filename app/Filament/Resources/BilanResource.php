@@ -28,7 +28,6 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class BilanResource extends Resource
 {
@@ -109,14 +108,15 @@ class BilanResource extends Resource
                             ->label('Sexe')
                             ->default(fn($record) => $record?->patient?->sexe ?? ''),
                         Select::make('prescripteur_id')
+                            ->label('Prescripteur')
                             ->relationship('prescripteur', 'nom')
                             ->createOptionForm([
                                 Grid::make(2)
                                     ->schema([
-                                        TextInput::make('nom'),
-                                        TextInput::make('adresse'),
-                                        TextInput::make('tel'),
-                                        TextInput::make('email'),
+                                        TextInput::make('nom')->label('Nom complet'),
+                                        TextInput::make('tel')->label('Téléphone'),
+                                        TextInput::make('email')->label('Email'),
+                                        TextInput::make('adresse')->label('Adresse'),
                                     ])
                             ])
                             ->preload()
@@ -177,6 +177,7 @@ class BilanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with(['patient', 'prescripteur']))
             ->columns([
                 Tables\Columns\TextColumn::make('ref')
                     ->searchable()
@@ -234,7 +235,8 @@ class BilanResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultPaginationPageOption(25);
     }
 
     public static function getRelations(): array

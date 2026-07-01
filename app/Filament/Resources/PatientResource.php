@@ -11,8 +11,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PatientResource extends Resource
 {
@@ -27,33 +25,42 @@ class PatientResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Informations du patient')->schema([
-                    Forms\Components\TextInput::make('numero')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('nom')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('prenom')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('age')
-                        ->numeric()
-                        ->required(),
-                    Forms\Components\TextInput::make('lieu_naissance')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\TextInput::make('domicile')
-                        ->required()
-                        ->maxLength(255),
-                    Forms\Components\Select::make('sexe')
-                        ->required()
-                        ->options([
-                            'M' => 'Masculin',
-                            'F' => 'Féminin',
-                        ]),
-                ])
+                Section::make('Informations du patient')
                     ->columns(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('numero')
+                            ->label('N° de dossier')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('nom')
+                            ->label('Nom')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('prenom')
+                            ->label('Prénom')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Select::make('sexe')
+                            ->label('Sexe')
+                            ->required()
+                            ->options([
+                                'M' => 'Masculin',
+                                'F' => 'Féminin',
+                            ]),
+                        Forms\Components\TextInput::make('age')
+                            ->label('Âge (années)')
+                            ->numeric()
+                            ->required(),
+                        Forms\Components\TextInput::make('lieu_naissance')
+                            ->label('Lieu de naissance')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('domicile')
+                            ->label('Domicile')
+                            ->required()
+                            ->maxLength(255),
+                    ])
 
             ]);
     }
@@ -95,7 +102,8 @@ class PatientResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultPaginationPageOption(10);
     }
 
     public static function getRelations(): array

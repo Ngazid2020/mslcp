@@ -20,8 +20,6 @@ use Filament\Tables;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ElementResource extends Resource
 {
@@ -39,9 +37,11 @@ class ElementResource extends Resource
                 Section::make('Informations de l\'élément')->schema([
                     Grid::make(['default' => 1, 'md' => 2, 'xl' => 3])->schema([
                         Forms\Components\TextInput::make('nom')
+                            ->label("Nom de l'élément")
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('unite')
+                            ->label('Unité de mesure')
                             ->maxLength(255)
                             ->default(null),
                         Select::make('category_id')
@@ -131,6 +131,7 @@ class ElementResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with('category'))
             ->columns([
                 Tables\Columns\TextColumn::make('nom')
                     ->sortable()
@@ -171,7 +172,8 @@ class ElementResource extends Resource
             ->headerActions([
                 // ExportAction::make()
                 //     ->exporter(ElementExporter::class)
-            ]);
+            ])
+            ->defaultPaginationPageOption(10);
     }
 
     public static function getRelations(): array

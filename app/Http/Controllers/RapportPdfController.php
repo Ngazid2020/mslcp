@@ -80,26 +80,35 @@ class RapportPdfController extends Controller
 
         $maladie = $maladieId ? Maladie::findOrFail($maladieId) : null;
 
-        $totalCas = 0;
-        $maxCas   = 0;
-        $peakMois = null;
-        $monthly  = [];
+        // Requête 1 : cas par mois (bilan_maladie JOIN bilans)
+        $casQuery = DB::table('bilan_maladie')
+            ->join('bilans', 'bilan_maladie.bilan_id', '=', 'bilans.id')
+            ->selectRaw('MONTH(bilans.created_at) as m, COUNT(*) as n')
+            ->whereYear('bilans.created_at', $annee)
+            ->groupByRaw('MONTH(bilans.created_at)');
+
+        if ($maladieId) {
+            $casQuery->where('bilan_maladie.maladie_id', '=', $maladieId);
+        }
+
+        $casByMonth = $casQuery->pluck('n', 'm');
+
+        // Requête 2 : total bilans par mois
+        $bilansByMonth = Bilan::query()
+            ->selectRaw('MONTH(created_at) as m, COUNT(*) as n')
+            ->whereYear('created_at', '=', $annee)
+            ->groupByRaw('MONTH(created_at)')
+            ->pluck('n', 'm');
+
+        $totalCas         = 0;
+        $maxCas           = 0;
+        $peakMois         = null;
+        $totalBilansAnnee = (int) $bilansByMonth->sum();
+        $monthly          = [];
 
         for ($m = 1; $m <= 12; $m++) {
-            $query = DB::table('bilan_maladie')
-                ->join('bilans', 'bilan_maladie.bilan_id', '=', 'bilans.id')
-                ->whereYear('bilans.created_at', $annee)
-                ->whereMonth('bilans.created_at', $m);
-
-            if ($maladieId) {
-                $query->where('bilan_maladie.maladie_id', '=', $maladieId);
-            }
-
-            $cas         = $query->count();
-            $totalBilans = Bilan::query()
-                ->whereYear('created_at', '=', $annee)
-                ->whereMonth('created_at', '=', $m)
-                ->count();
+            $cas         = (int) ($casByMonth[$m] ?? 0);
+            $totalBilans = (int) ($bilansByMonth[$m] ?? 0);
 
             $totalCas += $cas;
 
@@ -115,8 +124,6 @@ class RapportPdfController extends Controller
                 'pct'          => $totalBilans > 0 ? round($cas / $totalBilans * 100, 1) : 0.0,
             ];
         }
-
-        $totalBilansAnnee = Bilan::query()->whereYear('created_at', '=', $annee)->count();
 
         $monthly['total'] = [
             'mois'         => 'Total',
