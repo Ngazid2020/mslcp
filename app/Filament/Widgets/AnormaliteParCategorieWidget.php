@@ -40,73 +40,65 @@ class AnormaliteParCategorieWidget extends ChartWidget
     {
         $months = (int) ($this->filter ?? 6);
 
-        $bilans = Cache::remember("anomalies_categorie_{$months}", 300, fn () => Bilan::query()
-            ->with(['patient', 'elements.category'])
-            ->where('created_at', '>=', now()->subMonths($months))
-            ->get());
+        // On cache le résultat final (petit tableau), pas la collection Eloquent brute
+        return Cache::remember("anomalies_categorie_chart_{$months}", 300, function () use ($months) {
+            $bilans = Bilan::query()
+                ->with(['patient', 'elements.category'])
+                ->where('created_at', '>=', now()->subMonths($months))
+                ->get();
 
-        /** @var array<string, array{total: int, anomal: int}> $stats */
-        $stats = [];
+            /** @var array<string, array{total: int, anomal: int}> $stats */
+            $stats = [];
 
-        foreach ($bilans as $bilan) {
-            if (!$bilan->patient) {
-                continue;
-            }
-            foreach ($bilan->elements as $element) {
-                $catName = $element->category?->name ?? 'Autre';
-
-                if (!isset($stats[$catName])) {
-                    $stats[$catName] = ['total' => 0, 'anomal' => 0];
-                }
-
-                $resultat = $element->pivot->resultat;
-
-                if ($resultat === null || $resultat === '') {
+            foreach ($bilans as $bilan) {
+                if (! $bilan->patient) {
                     continue;
                 }
-
-                // Inclure les résultats qualitatifs et numériques ; ignorer le texte libre non structuré
-                $isQual    = $element->type_valeur === 'qualitatif';
-                $isNumeric = is_numeric($resultat);
-
-                if (! $isQual && ! $isNumeric) {
-                    continue;
-                }
-
-                $stats[$catName]['total']++;
-
-                if ($element->isResultOutOfRange($resultat, $bilan->patient)) {
-                    $stats[$catName]['anomal']++;
+                foreach ($bilan->elements as $element) {
+                    $catName = $element->category?->name ?? 'Autre';
+                    if (! isset($stats[$catName])) {
+                        $stats[$catName] = ['total' => 0, 'anomal' => 0];
+                    }
+                    $resultat = $element->pivot->resultat;
+                    if ($resultat === null || $resultat === '') {
+                        continue;
+                    }
+                    if ($element->type_valeur !== 'qualitatif' && ! is_numeric($resultat)) {
+                        continue;
+                    }
+                    $stats[$catName]['total']++;
+                    if ($element->isResultOutOfRange($resultat, $bilan->patient)) {
+                        $stats[$catName]['anomal']++;
+                    }
                 }
             }
-        }
 
-        // Retirer les catégories sans données numériques et trier par taux décroissant
-        $stats = array_filter($stats, fn($s) => $s['total'] > 0);
-        uasort($stats, fn($a, $b) => ($b['anomal'] / $b['total']) <=> ($a['anomal'] / $a['total']));
+            $stats = array_filter($stats, fn ($s) => $s['total'] > 0);
+            uasort($stats, fn ($a, $b) => ($b['anomal'] / $b['total']) <=> ($a['anomal'] / $a['total']));
 
-        $labels = [];
-        $taux   = [];
-        $colors = [];
+            $labels = [];
+            $taux   = [];
+            $colors = [];
 
-        foreach ($stats as $catName => $s) {
-            $rate     = (int) round($s['anomal'] / $s['total'] * 100);
-            $labels[] = $catName . ' (' . $s['total'] . ')';
-            $taux[]   = $rate;
-            $colors[] = $rate > 30 ? '#c0392b' : ($rate > 15 ? '#d35400' : '#1a7f37');
-        }
+            foreach ($stats as $catName => $s) {
+                $rate     = (int) round($s['anomal'] / $s['total'] * 100);
+                $labels[] = $catName . ' (' . $s['total'] . ')';
+                $taux[]   = $rate;
+                $colors[] = $rate > 30 ? '#c0392b' : ($rate > 15 ? '#d35400' : '#1a7f37');
+            }
 
-        return [
-            'datasets' => [
-                [
-                    'label'           => 'Taux d\'anomalie (%)',
-                    'data'            => $taux,
-                    'backgroundColor' => $colors,
-                    'borderRadius'    => 4,
+            return [
+                'datasets' => [
+                    [
+                        'label'           => 'Taux d\'anomalie (%)',
+                        'data'            => $taux,
+                        'backgroundColor' => $colors,
+                        'borderRadius'    => 4,
+                    ],
                 ],
-            ],
-            'labels' => $labels,
-        ];
+                'labels' => $labels,
+            ];
+        });
     }
 
     protected function getType(): string

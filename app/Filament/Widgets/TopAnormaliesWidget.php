@@ -39,83 +39,66 @@ class TopAnormaliesWidget extends ChartWidget
     {
         $months = (int) ($this->filter ?? 6);
 
-        $bilans = Cache::remember("top_anomalies_{$months}", 300, fn () => Bilan::query()
-            ->with(['patient', 'elements'])
-            ->where('created_at', '>=', now()->subMonths($months))
-            ->get());
+        // On cache le résultat final (petit tableau), pas la collection Eloquent brute
+        return Cache::remember("top_anomalies_chart_{$months}", 300, function () use ($months) {
+            $bilans = Bilan::query()
+                ->with(['patient', 'elements'])
+                ->where('created_at', '>=', now()->subMonths($months))
+                ->get();
 
-        /** @var array<string, array{total: int, anomal: int}> $stats */
-        $stats = [];
+            /** @var array<string, array{total: int, anomal: int}> $stats */
+            $stats = [];
 
-        foreach ($bilans as $bilan) {
-            if (! $bilan->patient) {
-                continue;
-            }
-
-            foreach ($bilan->elements as $element) {
-                $resultat = $element->pivot->resultat;
-
-                if ($resultat === null || $resultat === '') {
+            foreach ($bilans as $bilan) {
+                if (! $bilan->patient) {
                     continue;
                 }
-
-                $isQual = $element->type_valeur === 'qualitatif';
-                $isNum  = is_numeric($resultat);
-
-                if (! $isQual && ! $isNum) {
-                    continue;
-                }
-
-                $nom = $element->nom;
-                if (! isset($stats[$nom])) {
-                    $stats[$nom] = ['total' => 0, 'anomal' => 0];
-                }
-
-                $stats[$nom]['total']++;
-
-                if ($element->isResultOutOfRange($resultat, $bilan->patient)) {
-                    $stats[$nom]['anomal']++;
+                foreach ($bilan->elements as $element) {
+                    $resultat = $element->pivot->resultat;
+                    if ($resultat === null || $resultat === '') {
+                        continue;
+                    }
+                    if ($element->type_valeur !== 'qualitatif' && ! is_numeric($resultat)) {
+                        continue;
+                    }
+                    $nom = $element->nom;
+                    if (! isset($stats[$nom])) {
+                        $stats[$nom] = ['total' => 0, 'anomal' => 0];
+                    }
+                    $stats[$nom]['total']++;
+                    if ($element->isResultOutOfRange($resultat, $bilan->patient)) {
+                        $stats[$nom]['anomal']++;
+                    }
                 }
             }
-        }
 
-        // Seuil de significativité : au moins 5 résultats
-        $stats = array_filter($stats, fn($s) => $s['total'] >= 5);
+            $stats = array_filter($stats, fn ($s) => $s['total'] >= 5);
+            uasort($stats, fn ($a, $b) => ($b['anomal'] / $b['total']) <=> ($a['anomal'] / $a['total']));
+            $top = array_slice($stats, 0, 10, true);
 
-        // Trier par taux décroissant
-        uasort($stats, fn($a, $b) =>
-            ($b['anomal'] / $b['total']) <=> ($a['anomal'] / $a['total'])
-        );
+            $labels = [];
+            $taux   = [];
+            $colors = [];
 
-        // Top 10
-        $top = array_slice($stats, 0, 10, true);
+            foreach ($top as $nom => $s) {
+                $rate     = round($s['anomal'] / $s['total'] * 100, 1);
+                $labels[] = $nom . ' (' . $s['total'] . ')';
+                $taux[]   = $rate;
+                $colors[] = $rate >= 40 ? '#c0392b' : ($rate >= 20 ? '#d35400' : '#1a7f37');
+            }
 
-        $labels = [];
-        $taux   = [];
-        $counts = [];
-        $colors = [];
-
-        foreach ($top as $nom => $s) {
-            $rate     = round($s['anomal'] / $s['total'] * 100, 1);
-            $labels[] = $nom . ' (' . $s['total'] . ')';
-            $taux[]   = $rate;
-            $counts[] = $s['anomal'] . '/' . $s['total'];
-            $colors[] = $rate >= 40 ? '#c0392b'
-                      : ($rate >= 20 ? '#d35400'
-                      : '#1a7f37');
-        }
-
-        return [
-            'datasets' => [
-                [
-                    'label'           => 'Taux d\'anomalie (%)',
-                    'data'            => $taux,
-                    'backgroundColor' => $colors,
-                    'borderRadius'    => 4,
+            return [
+                'datasets' => [
+                    [
+                        'label'           => 'Taux d\'anomalie (%)',
+                        'data'            => $taux,
+                        'backgroundColor' => $colors,
+                        'borderRadius'    => 4,
+                    ],
                 ],
-            ],
-            'labels' => $labels,
-        ];
+                'labels' => $labels,
+            ];
+        });
     }
 
     protected function getType(): string
