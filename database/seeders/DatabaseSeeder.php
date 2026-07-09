@@ -50,6 +50,7 @@ class DatabaseSeeder extends Seeder
         $userLaborantin->assignRole('laborantin');
         $userReceptionniste->assignRole('receptionniste');
 
+        $this->call(AnalysisCatalogSeeder::class);
         $this->call(RoleSeeder::class);
         $this->call(PermissionSeeder::class);
         $this->call(UserSeeder::class);
@@ -307,6 +308,11 @@ class DatabaseSeeder extends Seeder
                 ['nom' => 'PSA total',        'unite' => 'ng/mL', 'ref_inf_h' => 0.0,  'ref_sup_h' => 4.0,  'ref_inf_f' => null,  'ref_sup_f' => null],
                 ['nom' => 'PSA libre',        'unite' => 'ng/mL', 'ref_inf_h' => 0.0,  'ref_sup_h' => 1.0,  'ref_inf_f' => null,  'ref_sup_f' => null],
             ],
+            'BILAN THYROÏDIEN' => [
+                ['nom' => 'TSH',  'unite' => 'mUI/l',  'ref_inf_h' => 0.3, 'ref_sup_h' => 4.2,  'ref_inf_f' => 0.3, 'ref_sup_f' => 4.2],
+                ['nom' => 'T3',   'unite' => 'ng/ml',  'ref_inf_h' => 0.6, 'ref_sup_h' => 2.1,  'ref_inf_f' => 0.6, 'ref_sup_f' => 2.1],
+                ['nom' => 'T4',   'unite' => 'µg/dl',  'ref_inf_h' => 4.7, 'ref_sup_h' => 12.5, 'ref_inf_f' => 4.7, 'ref_sup_f' => 12.5],
+            ],
             'FSH' => [
                 ['nom' => 'FSH',              'unite' => 'mUI/mL','ref_inf_h' => 1.5,  'ref_sup_h' => 12.4, 'ref_inf_f' => 3.5,  'ref_sup_f' => 12.5],
             ],
@@ -314,27 +320,27 @@ class DatabaseSeeder extends Seeder
                 ['nom' => 'LH',               'unite' => 'mUI/mL','ref_inf_h' => 1.7,  'ref_sup_h' => 8.6,  'ref_inf_f' => 2.4,  'ref_sup_f' => 12.6],
             ],
             'HBA1c' => [
-                ['nom' => 'HbA1c',            'unite' => '%',     'ref_inf_h' => null, 'ref_sup_h' => 5.7,  'ref_inf_f' => null, 'ref_sup_f' => 5.7],
+                ['nom' => 'HbA1c',            'unite' => '%',     'ref_inf_h' => null, 'ref_sup_h' => 6.5,  'ref_inf_f' => null, 'ref_sup_f' => 6.5],
             ],
             'BetaHCG' => [
-                ['nom' => 'β-HCG',            'unite' => 'mUI/mL','ref_inf_h' => null, 'ref_sup_h' => 5.0,  'ref_inf_f' => null, 'ref_sup_f' => 5.0],
+                ['nom' => 'β-HCG',            'unite' => 'mUI/mL','ref_inf_h' => null, 'ref_sup_h' => 2.0,  'ref_inf_f' => null, 'ref_sup_f' => 2.0],
             ],
             'OESTRADIOLE (E2)' => [
                 ['nom' => 'Œstradiol (E2)',   'unite' => 'pg/mL', 'ref_inf_h' => 10.0, 'ref_sup_h' => 40.0, 'ref_inf_f' => 20.0, 'ref_sup_f' => 400.0],
             ],
             'PRL' => [
-                ['nom' => 'Prolactine (PRL)', 'unite' => 'ng/mL', 'ref_inf_h' => 3.0,  'ref_sup_h' => 18.0, 'ref_inf_f' => 3.0,  'ref_sup_f' => 30.0],
+                ['nom' => 'Prolactine (PRL)', 'unite' => 'µUI/mL','ref_inf_h' => 31,   'ref_sup_h' => 433,  'ref_inf_f' => 33,   'ref_sup_f' => 555],
             ],
         ];
 
         $createdElements = [];
         foreach ($elementsByCategory as $categoryName => $elements) {
-            $category = Category::create(['name' => $categoryName]);
+            $category = Category::firstOrCreate(['name' => $categoryName]);
             foreach ($elements as $elementData) {
-                $createdElements[] = Element::create(array_merge(
-                    ['category_id' => $category->id, 'type_valeur' => 'numerique'],
-                    $elementData
-                ));
+                $createdElements[] = Element::updateOrCreate(
+                    ['nom' => $elementData['nom'], 'category_id' => $category->id],
+                    array_merge(['type_valeur' => 'numerique'], $elementData)
+                );
             }
         }
 

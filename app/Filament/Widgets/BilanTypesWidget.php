@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Bilan;
 use App\Models\BilanUrinaire;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\Cache;
 
 class BilanTypesWidget extends ChartWidget
 {
@@ -31,35 +32,38 @@ class BilanTypesWidget extends ChartWidget
     protected function getData(): array
     {
         $filter = $this->filter ?? 'annee';
+        $year   = now()->year;
 
-        $general  = Bilan::query()->whereNull('type')
-            ->when($filter === 'mois',  fn($q) => $q->where('created_at', '>=', now()->startOfMonth()))
-            ->when($filter === 'trim',  fn($q) => $q->where('created_at', '>=', now()->startOfQuarter()))
-            ->when($filter === 'annee', fn($q) => $q->whereYear('created_at', '=', now()->year))
-            ->count();
+        return Cache::remember("bilan_types_{$filter}_{$year}", 300, function () use ($filter) {
+            $general  = Bilan::query()->whereNull('type')
+                ->when($filter === 'mois',  fn($q) => $q->where('created_at', '>=', now()->startOfMonth()))
+                ->when($filter === 'trim',  fn($q) => $q->where('created_at', '>=', now()->startOfQuarter()))
+                ->when($filter === 'annee', fn($q) => $q->whereYear('created_at', '=', now()->year))
+                ->count();
 
-        $hormonal = Bilan::query()->where('type', '=', 'hormonal')
-            ->when($filter === 'mois',  fn($q) => $q->where('created_at', '>=', now()->startOfMonth()))
-            ->when($filter === 'trim',  fn($q) => $q->where('created_at', '>=', now()->startOfQuarter()))
-            ->when($filter === 'annee', fn($q) => $q->whereYear('created_at', '=', now()->year))
-            ->count();
+            $hormonal = Bilan::query()->where('type', '=', 'hormonal')
+                ->when($filter === 'mois',  fn($q) => $q->where('created_at', '>=', now()->startOfMonth()))
+                ->when($filter === 'trim',  fn($q) => $q->where('created_at', '>=', now()->startOfQuarter()))
+                ->when($filter === 'annee', fn($q) => $q->whereYear('created_at', '=', now()->year))
+                ->count();
 
-        $urinaire = BilanUrinaire::query()
-            ->when($filter === 'mois',  fn($q) => $q->where('created_at', '>=', now()->startOfMonth()))
-            ->when($filter === 'trim',  fn($q) => $q->where('created_at', '>=', now()->startOfQuarter()))
-            ->when($filter === 'annee', fn($q) => $q->whereYear('created_at', '=', now()->year))
-            ->count();
+            $urinaire = BilanUrinaire::query()
+                ->when($filter === 'mois',  fn($q) => $q->where('created_at', '>=', now()->startOfMonth()))
+                ->when($filter === 'trim',  fn($q) => $q->where('created_at', '>=', now()->startOfQuarter()))
+                ->when($filter === 'annee', fn($q) => $q->whereYear('created_at', '=', now()->year))
+                ->count();
 
-        return [
-            'datasets' => [
-                [
-                    'data'            => [$general, $hormonal, $urinaire],
-                    'backgroundColor' => ['#1B3A6B', '#2e6fb8', '#1a7f37'],
-                    'hoverOffset'     => 6,
+            return [
+                'datasets' => [
+                    [
+                        'data'            => [$general, $hormonal, $urinaire],
+                        'backgroundColor' => ['#1B3A6B', '#2e6fb8', '#1a7f37'],
+                        'hoverOffset'     => 6,
+                    ],
                 ],
-            ],
-            'labels' => ['Général', 'Hormonal', 'Urinaire (ECBU)'],
-        ];
+                'labels' => ['Général', 'Hormonal', 'Urinaire (ECBU)'],
+            ];
+        });
     }
 
     protected function getType(): string

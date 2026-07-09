@@ -6,7 +6,7 @@ use App\Models\Bilan;
 use App\Models\Patient;
 use Filament\Notifications\Notification;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class PatientsAgePyramideWidget extends ChartWidget
 {
@@ -48,60 +48,64 @@ class PatientsAgePyramideWidget extends ChartWidget
     {
         $filter = $this->filter ?? (string) now()->year;
 
-        $groups = ['0–4', '5–14', '15–24', '25–34', '35–44', '45–54', '55–64', '65+'];
+        return Cache::remember("patients_pyramide_{$filter}", 600, function () use ($filter) {
+            $groups = ['0–4', '5–14', '15–24', '25–34', '35–44', '45–54', '55–64', '65+'];
 
-        $caseExpr = 'CASE
-            WHEN age BETWEEN 0 AND 4 THEN 0
-            WHEN age BETWEEN 5 AND 14 THEN 1
-            WHEN age BETWEEN 15 AND 24 THEN 2
-            WHEN age BETWEEN 25 AND 34 THEN 3
-            WHEN age BETWEEN 35 AND 44 THEN 4
-            WHEN age BETWEEN 45 AND 54 THEN 5
-            WHEN age BETWEEN 55 AND 64 THEN 6
-            ELSE 7 END';
+            $caseExpr = 'CASE
+                WHEN age BETWEEN 0 AND 4 THEN 0
+                WHEN age BETWEEN 5 AND 14 THEN 1
+                WHEN age BETWEEN 15 AND 24 THEN 2
+                WHEN age BETWEEN 25 AND 34 THEN 3
+                WHEN age BETWEEN 35 AND 44 THEN 4
+                WHEN age BETWEEN 45 AND 54 THEN 5
+                WHEN age BETWEEN 55 AND 64 THEN 6
+                ELSE 7 END';
 
-        $query = Patient::query()
-            ->selectRaw("sexe, ($caseExpr) as tranche_idx, COUNT(*) as n")
-            ->groupByRaw("sexe, tranche_idx");
+            $query = Patient::query()
+                ->selectRaw("sexe, ($caseExpr) as tranche_idx, COUNT(*) as n")
+                ->groupByRaw("sexe, tranche_idx");
 
-        if ($filter !== 'tous') {
-            $patientIds = Bilan::query()
-                ->whereYear('created_at', '=', (int) $filter)
-                ->distinct()
-                ->pluck('patient_id');
-            $query->whereIn('id', $patientIds);
-        }
-
-        $rows   = $query->get();
-        $hommes = array_fill(0, 8, 0);
-        $femmes = array_fill(0, 8, 0);
-
-        foreach ($rows as $row) {
-            $idx = (int) $row->tranche_idx;
-            if ($row->sexe === 'M') {
-                $hommes[$idx] = (int) $row->n;
-            } elseif ($row->sexe === 'F') {
-                $femmes[$idx] = (int) $row->n;
+            if ($filter !== 'tous') {
+                // Sous-requête pour éviter de charger tous les patient_id en PHP
+                $query->whereIn('id', function ($sub) use ($filter) {
+                    $sub->select('patient_id')
+                        ->from('bilans')
+                        ->whereYear('created_at', '=', (int) $filter)
+                        ->distinct();
+                });
             }
-        }
 
-        return [
-            'datasets' => [
-                [
-                    'label'           => 'Hommes',
-                    'data'            => $hommes,
-                    'backgroundColor' => '#2e6fb8',
-                    'borderRadius'    => 3,
+            $rows   = $query->get();
+            $hommes = array_fill(0, 8, 0);
+            $femmes = array_fill(0, 8, 0);
+
+            foreach ($rows as $row) {
+                $idx = (int) $row->tranche_idx;
+                if ($row->sexe === 'M') {
+                    $hommes[$idx] = (int) $row->n;
+                } elseif ($row->sexe === 'F') {
+                    $femmes[$idx] = (int) $row->n;
+                }
+            }
+
+            return [
+                'datasets' => [
+                    [
+                        'label'           => 'Hommes',
+                        'data'            => $hommes,
+                        'backgroundColor' => '#2e6fb8',
+                        'borderRadius'    => 3,
+                    ],
+                    [
+                        'label'           => 'Femmes',
+                        'data'            => $femmes,
+                        'backgroundColor' => '#c0392b',
+                        'borderRadius'    => 3,
+                    ],
                 ],
-                [
-                    'label'           => 'Femmes',
-                    'data'            => $femmes,
-                    'backgroundColor' => '#c0392b',
-                    'borderRadius'    => 3,
-                ],
-            ],
-            'labels' => $groups,
-        ];
+                'labels' => $groups,
+            ];
+        });
     }
 
     protected function getType(): string

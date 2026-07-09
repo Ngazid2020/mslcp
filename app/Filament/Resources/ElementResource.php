@@ -4,20 +4,15 @@ namespace App\Filament\Resources;
 
 use App\Filament\Exports\ElementExporter;
 use App\Filament\Resources\ElementResource\Pages;
-use App\Filament\Resources\ElementResource\RelationManagers;
 use App\Models\Element;
-use Filament\Actions\Exports\Models\Export;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Table;
 
@@ -138,10 +133,10 @@ class ElementResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('unite')
                     ->searchable(),
-                Tables\Columns\SelectColumn::make('category_id')
-                    ->options(function () {
-                        return \App\Models\Category::all()->pluck('name', 'id')->toArray();
-                    }),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Catégorie')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('type_valeur')
                     ->sortable()
                     ->searchable(),
@@ -173,7 +168,7 @@ class ElementResource extends Resource
                 // ExportAction::make()
                 //     ->exporter(ElementExporter::class)
             ])
-            ->defaultPaginationPageOption(10);
+            ->defaultPaginationPageOption(25);
     }
 
     public static function getRelations(): array

@@ -15,6 +15,7 @@ class Bilan extends Model
         'ref',
         'type',
         'patient_id',
+        'prescripteur_id',
     ];
 
     /**

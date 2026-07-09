@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\BilanResource\Pages;
-use App\Filament\Resources\BilanResource\RelationManagers;
 use App\Filament\Resources\ElementsResource\RelationManagers\ElementsRelationManager;
 use App\Models\Bilan;
 use App\Models\Category;
@@ -11,11 +10,8 @@ use App\Models\Element;
 use App\Models\Maladie;
 use App\Models\Patient;
 use Filament\Forms;
-use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\CheckboxList;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -23,6 +19,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Support\Colors\Color;
+use Illuminate\Support\Facades\Cache;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\ActionGroup;
@@ -127,7 +124,9 @@ class BilanResource extends Resource
                     ->schema([
                         CheckboxList::make('maladies')
                             ->relationship('maladies', 'nom')
-                            ->options(fn () => Maladie::query()->where('actif', true)->orderBy('nom')->pluck('nom', 'id'))
+                            ->options(fn () => Cache::remember('form_maladies_actives', 300, fn () =>
+                                Maladie::query()->where('actif', true)->orderBy('nom')->pluck('nom', 'id')
+                            ))
                             ->columns(3)
                             ->columnSpanFull()
                             ->helperText('Cocher les pathologies diagnostiquées lors de ce bilan.'),
@@ -136,7 +135,9 @@ class BilanResource extends Resource
                 Section::make('Résultats des analyses')->schema([
                     CheckboxList::make('categorie')
                         ->label(__('Catégories'))
-                        ->options(Category::query()->orderBy('name')->pluck('name', 'id'))
+                        ->options(fn () => Cache::remember('form_categories_all', 3600, fn () =>
+                            Category::query()->orderBy('name')->pluck('name', 'id')
+                        ))
                         ->columns(4)
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set) {

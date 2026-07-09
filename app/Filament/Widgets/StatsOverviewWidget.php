@@ -6,6 +6,7 @@ use App\Models\Bilan;
 use App\Models\BilanUrinaire;
 use App\Models\Patient;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -20,17 +21,22 @@ class StatsOverviewWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $now      = now();
-        $prev     = now()->subMonthNoOverflow();
+        $now  = now();
+        $prev = now()->subMonthNoOverflow();
+        $key  = 'stats_overview_' . $now->year . '_' . $now->month;
 
-        $thisMonth = $this->countBilansForMonth($now->year, $now->month);
-        $lastMonth = $this->countBilansForMonth($prev->year, $prev->month);
-        $delta     = $thisMonth - $lastMonth;
-        $deltaStr  = ($delta >= 0 ? '+' : '') . $delta . ' vs mois dernier';
+        // Cache les données brutes uniquement — les objets Stat ne sont pas sérialisables
+        [$thisMonth, $lastMonth, $totalPatients, $taux, $totalNum] = Cache::remember($key, 300, function () use ($now, $prev) {
+            $thisMonth     = $this->countBilansForMonth($now->year, $now->month);
+            $lastMonth     = $this->countBilansForMonth($prev->year, $prev->month);
+            $totalPatients = Patient::query()->count();
+            [$taux, $totalNum] = $this->tauxAnomalieCeMois($now);
 
-        $totalPatients = Patient::query()->count();
+            return [$thisMonth, $lastMonth, $totalPatients, $taux, $totalNum];
+        });
 
-        [$taux, $totalNum] = $this->tauxAnomalieCeMois($now);
+        $delta    = $thisMonth - $lastMonth;
+        $deltaStr = ($delta >= 0 ? '+' : '') . $delta . ' vs mois dernier';
 
         return [
             Stat::make('Bilans ce mois', $thisMonth)

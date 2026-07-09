@@ -11,6 +11,7 @@ class Bacteriologie extends Model
         'ref',
         'type',
         'patient_id',
+        'prescripteur_id',
     ];
 
     /**
@@ -38,10 +39,10 @@ class Bacteriologie extends Model
         parent::boot();
 
         static::creating(function ($bilan) {
-            $year = date('Y');
-            $mounth = date('m');
+            $year  = date('Y');
+            $month = date('m');
             $count = Bacteriologie::whereYear('created_at', $year)->count() + 1;
-            $bilan->ref = 'URI-' . $year . '-' .$mounth.'-'. str_pad($count, 3, '0', STR_PAD_LEFT);
+            $bilan->ref = 'URI-' . $year . '-' . $month . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
         });
     }
 }

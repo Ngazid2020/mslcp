@@ -105,6 +105,7 @@ class ElementsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with('category'))
             ->recordTitleAttribute('nom')
             ->columns([
                 Tables\Columns\TextColumn::make('nom'),

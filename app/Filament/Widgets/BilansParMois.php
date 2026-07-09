@@ -6,6 +6,7 @@ use App\Models\Bilan;
 use App\Models\BilanUrinaire;
 use Filament\Notifications\Notification;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\Cache;
 
 class BilansParMois extends ChartWidget
 {
@@ -44,51 +45,53 @@ class BilansParMois extends ChartWidget
     {
         $year = (int) ($this->filter ?? now()->year);
 
-        $generalByMonth = Bilan::query()
-            ->selectRaw('MONTH(created_at) as m, COUNT(*) as n')
-            ->whereYear('created_at', $year)
-            ->groupBy('m')
-            ->pluck('n', 'm');
+        return Cache::remember("bilans_par_mois_{$year}", 600, function () use ($year) {
+            $generalByMonth = Bilan::query()
+                ->selectRaw('MONTH(created_at) as m, COUNT(*) as n')
+                ->whereYear('created_at', $year)
+                ->groupBy('m')
+                ->pluck('n', 'm');
 
-        $urinaireByMonth = BilanUrinaire::query()
-            ->selectRaw('MONTH(created_at) as m, COUNT(*) as n')
-            ->whereYear('created_at', $year)
-            ->groupBy('m')
-            ->pluck('n', 'm');
+            $urinaireByMonth = BilanUrinaire::query()
+                ->selectRaw('MONTH(created_at) as m, COUNT(*) as n')
+                ->whereYear('created_at', $year)
+                ->groupBy('m')
+                ->pluck('n', 'm');
 
-        $general  = [];
-        $urinaire = [];
-        $labels   = [];
+            $general  = [];
+            $urinaire = [];
+            $labels   = [];
 
-        for ($month = 1; $month <= 12; $month++) {
-            $general[]  = (int) ($generalByMonth[$month] ?? 0);
-            $urinaire[] = (int) ($urinaireByMonth[$month] ?? 0);
-            $labels[]   = self::MONTHS_FR[$month - 1];
-        }
+            for ($month = 1; $month <= 12; $month++) {
+                $general[]  = (int) ($generalByMonth[$month] ?? 0);
+                $urinaire[] = (int) ($urinaireByMonth[$month] ?? 0);
+                $labels[]   = self::MONTHS_FR[$month - 1];
+            }
 
-        return [
-            'datasets' => [
-                [
-                    'label'           => 'Bilans (gén. + hormonal)',
-                    'data'            => $general,
-                    'borderColor'     => '#1B3A6B',
-                    'backgroundColor' => 'rgba(27, 58, 107, 0.1)',
-                    'fill'            => true,
-                    'tension'         => 0.35,
-                    'pointRadius'     => 4,
+            return [
+                'datasets' => [
+                    [
+                        'label'           => 'Bilans (gén. + hormonal)',
+                        'data'            => $general,
+                        'borderColor'     => '#1B3A6B',
+                        'backgroundColor' => 'rgba(27, 58, 107, 0.1)',
+                        'fill'            => true,
+                        'tension'         => 0.35,
+                        'pointRadius'     => 4,
+                    ],
+                    [
+                        'label'           => 'Bilans urinaires + bactério',
+                        'data'            => $urinaire,
+                        'borderColor'     => '#1a7f37',
+                        'backgroundColor' => 'rgba(26, 127, 55, 0.1)',
+                        'fill'            => true,
+                        'tension'         => 0.35,
+                        'pointRadius'     => 4,
+                    ],
                 ],
-                [
-                    'label'           => 'Bilans urinaires + bactério',
-                    'data'            => $urinaire,
-                    'borderColor'     => '#1a7f37',
-                    'backgroundColor' => 'rgba(26, 127, 55, 0.1)',
-                    'fill'            => true,
-                    'tension'         => 0.35,
-                    'pointRadius'     => 4,
-                ],
-            ],
-            'labels' => $labels,
-        ];
+                'labels' => $labels,
+            ];
+        });
     }
 
     protected function getType(): string

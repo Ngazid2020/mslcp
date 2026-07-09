@@ -19,6 +19,9 @@ class AnalyseUrinaire extends Model
 
     public function bacteriologies(): BelongsToMany
     {
-        return $this->belongsToMany(Bacteriologie::class)->using(AnalyseUrinaire::class);
+        return $this->belongsToMany(Bacteriologie::class, 'analyse_bacts')
+            ->using(AnalyseBact::class)
+            ->withPivot('resultat')
+            ->withTimestamps();
     }
 }
