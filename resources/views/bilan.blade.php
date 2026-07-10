@@ -272,7 +272,14 @@
     }
 @endphp
 
+@php
+    $negTextValues = ['négatif', 'negatif', '-', 'non détecté', 'non detecte', 'absent', 'aucun'];
+    $parasitoCats  = ['parasitologie', 'parasitologie sanguine', 'parasitologie des selles'];
+@endphp
+
 @foreach ($categories as $categoryName => $elements)
+    @php $isParasito = in_array(strtolower(trim($categoryName)), $parasitoCats); @endphp
+
     <div class="section-hd">
         @if($categoryName === 'BetaHCG')
             &beta;HCG — Hormone Chorionique Gonadotrope
@@ -285,51 +292,80 @@
         @endif
     </div>
 
-    <table class="rt">
-        <thead>
-            <tr>
-                <th class="c-name">Analyse</th>
-                <th class="c-val">Résultat</th>
-                <th class="c-unit">Unité</th>
-                <th class="c-ref">Valeurs de référence</th>
-                <th class="c-stat">État</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach ($elements as $element)
-            @php
-                $refMin = 0; $refMax = 0;
-                $status  = $getStatus($element, $record->patient->age, $record->patient->sexe, $refMin, $refMax);
-                $resultat = $element->pivot->resultat ?? '';
-            @endphp
-            @if($element->nom !== 'BetaHCG' && $resultat !== '' && $resultat !== '0')
-            <tr>
-                <td class="c-name">{{ $element->nom }}</td>
-                <td class="c-val @if($status==='high' || $status==='qual_pos') v-hi @elseif($status==='low') v-lo @elseif($status==='normal' || $status==='qual_neg') v-ok @endif">
-                    {{ $resultat }}
-                </td>
-                <td class="c-unit">{{ $element->unite }}</td>
-                <td class="c-ref">
-                    @if($element->type_valeur === 'qualitatif')
-                        <span style="font-size:8px; color:#888; font-style:italic;">Qualitatif</span>
-                    @elseif($refMin != 0 || $refMax != 0)
-                        {{ $refMin }} &ndash; {{ $refMax }}
-                    @else &mdash; @endif
-                </td>
-                <td class="c-stat">
-                    @if($status === 'qual_pos')     <span class="s-hi" style="font-size:7.5px; font-weight:bold;">POS</span>
-                    @elseif($status === 'qual_neg')  <span class="s-ok" style="font-size:7.5px; font-weight:bold;">NÉG</span>
-                    @elseif($status === 'high')      <span class="s-hi">&#9650;</span>
-                    @elseif($status === 'low')       <span class="s-lo">&#9660;</span>
-                    @elseif($status === 'normal')    <span class="s-ok">&#9679;</span>
-                    @else <span class="s-na">&mdash;</span>
-                    @endif
-                </td>
-            </tr>
-            @endif
-        @endforeach
-        </tbody>
-    </table>
+    @if($isParasito)
+        {{-- Tableau simplifié : Analyse + Résultat uniquement --}}
+        <table class="rt">
+            <thead>
+                <tr>
+                    <th style="width:55%; text-align:left;" class="c-name">Analyse</th>
+                    <th style="width:45%; text-align:center;">Résultat</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach ($elements as $element)
+                @php
+                    $resultat   = $element->pivot->resultat ?? '';
+                    $normalized = strtolower(trim((string) $resultat));
+                    $isNeg      = in_array($normalized, $negTextValues) || $normalized === '';
+                    $colorClass = $isNeg ? 'v-ok' : 'v-hi';
+                @endphp
+                @if($resultat !== '' && $resultat !== '0')
+                <tr>
+                    <td class="c-name">{{ $element->nom }}</td>
+                    <td style="text-align:center; font-weight:bold;" class="{{ $colorClass }}">{{ $resultat }}</td>
+                </tr>
+                @endif
+            @endforeach
+            </tbody>
+        </table>
+    @else
+        {{-- Tableau complet : 5 colonnes --}}
+        <table class="rt">
+            <thead>
+                <tr>
+                    <th class="c-name">Analyse</th>
+                    <th class="c-val">Résultat</th>
+                    <th class="c-unit">Unité</th>
+                    <th class="c-ref">Valeurs de référence</th>
+                    <th class="c-stat">État</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach ($elements as $element)
+                @php
+                    $refMin = 0; $refMax = 0;
+                    $status  = $getStatus($element, $record->patient->age, $record->patient->sexe, $refMin, $refMax);
+                    $resultat = $element->pivot->resultat ?? '';
+                @endphp
+                @if($element->nom !== 'BetaHCG' && $resultat !== '' && $resultat !== '0')
+                <tr>
+                    <td class="c-name">{{ $element->nom }}</td>
+                    <td class="c-val @if($status==='high' || $status==='qual_pos') v-hi @elseif($status==='low') v-lo @elseif($status==='normal' || $status==='qual_neg') v-ok @endif">
+                        {{ $resultat }}
+                    </td>
+                    <td class="c-unit">{{ $element->unite }}</td>
+                    <td class="c-ref">
+                        @if($element->type_valeur === 'qualitatif')
+                            <span style="font-size:8px; color:#888; font-style:italic;">Qualitatif</span>
+                        @elseif($refMin != 0 || $refMax != 0)
+                            {{ $refMin }} &ndash; {{ $refMax }}
+                        @else &mdash; @endif
+                    </td>
+                    <td class="c-stat">
+                        @if($status === 'qual_pos')     <span class="s-hi" style="font-size:7.5px; font-weight:bold;">POS</span>
+                        @elseif($status === 'qual_neg')  <span class="s-ok" style="font-size:7.5px; font-weight:bold;">NÉG</span>
+                        @elseif($status === 'high')      <span class="s-hi">&#9650;</span>
+                        @elseif($status === 'low')       <span class="s-lo">&#9660;</span>
+                        @elseif($status === 'normal')    <span class="s-ok">&#9679;</span>
+                        @else <span class="s-na">&mdash;</span>
+                        @endif
+                    </td>
+                </tr>
+                @endif
+            @endforeach
+            </tbody>
+        </table>
+    @endif
 @endforeach
 
 {{-- PIED DE PAGE --}}
@@ -343,7 +379,7 @@
         </td>
         <td style="width:45%; text-align:right;">
             <div class="sig-label">Responsable du Laboratoire</div>
-            <img src="{{ public_path('img/signature.png') }}" alt="Signature" style="width:100px; height:auto; display:block; margin-left:auto; margin-top:4px;">
+            <img src="{{ public_path('img/signature.png') }}" alt="Signature" style="width:150px; height:auto; display:block; margin-left:auto; margin-top:4px;">
             <div class="sig-name">Mme Rahamatou SILAI</div>
             <div class="sig-title">Parasitologue / MSc Biochimie</div>
         </td>

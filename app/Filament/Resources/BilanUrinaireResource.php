@@ -49,19 +49,18 @@ class BilanUrinaireResource extends Resource
                             ->createOptionForm([
                                 Grid::make(2)
                                     ->schema([
-                                        TextInput::make('nom'),
-                                        TextInput::make('prenom'),
+                                        TextInput::make('nom')->required(),
+                                        TextInput::make('prenom')->required(),
                                         TextInput::make('tel')
                                             ->label('Téléphone'),
                                         Select::make('sexe')
-                                            ->options([
-                                                'M' => 'Masculin',
-                                                'F' => 'Féminin'
-                                            ]),
+                                            ->options(['M' => 'Masculin', 'F' => 'Féminin'])
+                                            ->required(),
                                         TextInput::make('domicile'),
-                                        TextInput::make('lieu_naissance'),
+                                        TextInput::make('lieu_naissance')->required(),
                                         TextInput::make('age')
                                             ->numeric()
+                                            ->required()
                                             ->minValue(0)
                                             ->maxValue(120),
                                     ])

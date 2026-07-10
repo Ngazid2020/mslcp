@@ -20,10 +20,11 @@ class CategoryExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your category export has completed and ' . number_format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $n    = number_format($export->successful_rows);
+        $body = "Export des catégories terminé — {$n} " . ($export->successful_rows > 1 ? 'lignes exportées' : 'ligne exportée') . '.';
 
-        if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+        if ($failed = $export->getFailedRowsCount()) {
+            $body .= ' ' . number_format($failed) . ' ' . ($failed > 1 ? 'lignes ont échoué' : 'ligne a échoué') . '.';
         }
 
         return $body;

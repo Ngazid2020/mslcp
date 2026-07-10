@@ -35,7 +35,10 @@ class Element extends Model
 
     public function bilans(): BelongsToMany
     {
-        return $this->belongsToMany(Bilan::class)->using(Analyse::class);
+        return $this->belongsToMany(Bilan::class, 'analyses')
+            ->using(Analyse::class)
+            ->withPivot('resultat')
+            ->withTimestamps();
     }
 
     /**
@@ -73,9 +76,22 @@ class Element extends Model
             return false;
         }
 
+        $normalized = strtolower(trim((string) $value));
+
+        // Valeurs considérées comme « normales » (négatif / absent)
+        $negativeValues = ['négatif', 'negatif', 'negatif', '-', 'non détecté', 'non detecte', 'absent', 'aucun'];
+
         if ($this->type_valeur === 'qualitatif') {
-            $normalized = strtolower(trim((string) $value));
-            return ! in_array($normalized, ['négatif', 'negatif', '-', 'non détecté', 'non detecte']);
+            return ! in_array($normalized, $negativeValues);
+        }
+
+        // positif/negatif, positif/numerique, negatif/numerique : résultat textuel possible
+        // ex. "Plasmodium falciparum" → positif (hors norme), "négatif" → normal
+        if (in_array($this->type_valeur, ['positif/negatif', 'positif/numerique', 'negatif/numerique'])) {
+            if (! is_numeric($value)) {
+                return ! in_array($normalized, $negativeValues);
+            }
+            // valeur numérique → comparaison aux bornes (logique ci-dessous)
         }
 
         if (! is_numeric($value)) {

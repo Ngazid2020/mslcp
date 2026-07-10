@@ -12,6 +12,9 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Actions\AttachAction;
+use Filament\Tables\Actions\DetachAction;
+use Filament\Tables\Actions\DetachBulkAction;
 use Filament\Tables\Table;
 
 class ElementsRelationManager extends RelationManager
@@ -128,12 +131,13 @@ class ElementsRelationManager extends RelationManager
                             return 'gray';
                         }
 
-                        // Pour les éléments qualitatifs : négatif = success, tout le reste = danger
-                        if ($record->type_valeur === 'qualitatif') {
-                            return $record->isResultOutOfRange($resultat, $patient) ? 'danger' : 'success';
-                        }
+                        $textualTypes = ['qualitatif', 'positif/negatif', 'positif/numerique', 'negatif/numerique'];
 
+                        // Résultat textuel : les types ci-dessus savent l'interpréter
                         if (! is_numeric($resultat)) {
+                            if (in_array($record->type_valeur, $textualTypes)) {
+                                return $record->isResultOutOfRange($resultat, $patient) ? 'danger' : 'success';
+                            }
                             return 'gray';
                         }
 
@@ -146,15 +150,28 @@ class ElementsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                AttachAction::make()
+                    ->label('Ajouter un élément')
+                    ->modalHeading('Ajouter un élément au bilan')
+                    ->preloadRecordSelect()
+                    ->recordSelectSearchColumns(['nom'])
+                    ->recordTitle(fn ($record) => $record->nom . ($record->unite ? ' (' . $record->unite . ')' : ''))
+                    ->form(fn (AttachAction $action): array => [
+                        $action->getRecordSelect()
+                            ->label('Élément d\'analyse')
+                            ->required(),
+                        TextInput::make('resultat')
+                            ->label('Résultat')
+                            ->placeholder('Laisser vide pour saisir plus tard'),
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                DetachAction::make()->label('Retirer'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    DetachBulkAction::make()->label('Retirer la sélection'),
                 ]),
             ]);
     }

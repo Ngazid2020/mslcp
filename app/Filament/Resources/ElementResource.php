@@ -126,17 +126,17 @@ class ElementResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->with('category'))
+            ->modifyQueryUsing(fn($query) => $query->with('category'))
             ->columns([
                 Tables\Columns\TextColumn::make('nom')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('unite')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('category.name')
-                    ->label('Catégorie')
-                    ->sortable()
-                    ->searchable(),
+                Tables\Columns\SelectColumn::make('category_id')
+                    ->options(function () {
+                        return \App\Models\Category::all()->pluck('name', 'id')->toArray();
+                    }),
                 Tables\Columns\TextColumn::make('type_valeur')
                     ->sortable()
                     ->searchable(),
@@ -168,7 +168,7 @@ class ElementResource extends Resource
                 // ExportAction::make()
                 //     ->exporter(ElementExporter::class)
             ])
-            ->defaultPaginationPageOption(25);
+            ->defaultPaginationPageOption(10);
     }
 
     public static function getRelations(): array

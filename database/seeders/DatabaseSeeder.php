@@ -13,6 +13,7 @@ use App\Models\Prescripteur;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,30 +22,29 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Vider le cache Spatie AVANT toute opération sur les permissions/rôles.
+        // Sans ça, migrate:fresh laisse d'anciens IDs dans le cache → givePermissionTo() explose.
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $userAdmin = User::factory()->create([
-            'name'      => 'Admin',
-            'email'     => 'admin@example.com',
-            'telephone' => '3310001',
-        ]);
+        $userAdmin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            ['name' => 'Admin', 'telephone' => '3310001', 'password' => bcrypt('password')]
+        );
 
-        $roleAdmin = Role::create(['name' => 'administrateur']);
-        $roleLaborantin = Role::create(['name' => 'laborantin']);
-        $roleReceptionniste = Role::create(['name' => 'receptionniste']);
+        $roleAdmin          = Role::firstOrCreate(['name' => 'administrateur']);
+        $roleLaborantin     = Role::firstOrCreate(['name' => 'laborantin']);
+        $roleReceptionniste = Role::firstOrCreate(['name' => 'receptionniste']);
 
         $userAdmin->assignRole('administrateur');
 
-        $userLaborantin = User::factory()->create([
-            'name'      => 'labo1',
-            'email'     => 'labo1@example.com',
-            'telephone' => '3310002',
-        ]);
-        $userReceptionniste = User::factory()->create([
-            'name'      => 'receptionniste 1',
-            'email'     => 'receptionniste1@example.com',
-            'telephone' => '3310003',
-        ]);
+        $userLaborantin = User::firstOrCreate(
+            ['email' => 'labo1@example.com'],
+            ['name' => 'labo1', 'telephone' => '3310002', 'password' => bcrypt('password')]
+        );
+        $userReceptionniste = User::firstOrCreate(
+            ['email' => 'receptionniste1@example.com'],
+            ['name' => 'receptionniste 1', 'telephone' => '3310003', 'password' => bcrypt('password')]
+        );
 
         $userLaborantin->assignRole('receptionniste');
         $userLaborantin->assignRole('laborantin');
