@@ -39,6 +39,13 @@ class ElementResource extends Resource
                             ->label('Unité de mesure')
                             ->maxLength(255)
                             ->default(null),
+                        Forms\Components\TextInput::make('prix')
+                            ->label('Tarif (FC)')
+                            ->numeric()
+                            ->minValue(0)
+                            ->suffix('FC')
+                            ->placeholder('Laisser vide si pas de tarif')
+                            ->default(null),
                         Select::make('category_id')
                             ->relationship('category', 'name')
                             ->searchable()
@@ -133,10 +140,15 @@ class ElementResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('unite')
                     ->searchable(),
-                Tables\Columns\SelectColumn::make('category_id')
-                    ->options(function () {
-                        return \App\Models\Category::all()->pluck('name', 'id')->toArray();
-                    }),
+                Tables\Columns\TextColumn::make('prix')
+                    ->label('Tarif')
+                    ->suffix(' FC')
+                    ->sortable()
+                    ->placeholder('—'),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Catégorie')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('type_valeur')
                     ->sortable()
                     ->searchable(),

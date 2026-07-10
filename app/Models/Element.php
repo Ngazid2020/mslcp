@@ -24,8 +24,13 @@ class Element extends Model
         'ref_inf_nne',
         'ref_sup_nne',
         'unite',
+        'prix',
         'category_id',
         'type_valeur',
+    ];
+
+    protected $casts = [
+        'prix' => 'integer',
     ];
 
     public function category()

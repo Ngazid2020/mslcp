@@ -107,15 +107,29 @@ class ElementsRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
+        $total = $this->getOwnerRecord()
+            ->elements()
+            ->whereNotNull('elements.prix')
+            ->sum('elements.prix');
+
+        $heading = $total > 0
+            ? 'Analyses · Total : ' . number_format($total, 0, ',', ' ') . ' FC'
+            : 'Analyses';
+
         return $table
             ->modifyQueryUsing(fn ($query) => $query->with('category'))
             ->recordTitleAttribute('nom')
+            ->heading($heading)
             ->columns([
                 Tables\Columns\TextColumn::make('nom'),
                 Tables\Columns\TextColumn::make('category.name')
                     ->label('Catégorie'),
                 Tables\Columns\TextColumn::make('unite')
                     ->label('Unité'),
+                Tables\Columns\TextColumn::make('prix')
+                    ->label('Tarif')
+                    ->suffix(' FC')
+                    ->placeholder('—'),
                 Tables\Columns\TextColumn::make('resultat')
                     ->badge()
                     ->color(function ($record, $livewire) {
