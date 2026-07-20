@@ -47,14 +47,15 @@ class BilanResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('patient_id')
                             ->relationship('patient', 'nom')
-                            ->getOptionLabelFromRecordUsing(fn (Patient $record) => trim($record->prenom . ' ' . $record->nom))
-                            ->getSearchResultsUsing(fn (string $search) => Patient::query()
-                                ->where('nom', 'like', "%{$search}%")
-                                ->orWhere('prenom', 'like', "%{$search}%")
-                                ->orderBy('nom')
-                                ->limit(50)
-                                ->get()
-                                ->mapWithKeys(fn ($p) => [$p->id => trim($p->prenom . ' ' . $p->nom)])
+                            ->getOptionLabelFromRecordUsing(fn(Patient $record) => trim($record->prenom . ' ' . $record->nom))
+                            ->getSearchResultsUsing(
+                                fn(string $search) => Patient::query()
+                                    ->where('nom', 'like', "%{$search}%")
+                                    ->orWhere('prenom', 'like', "%{$search}%")
+                                    ->orderBy('nom')
+                                    ->limit(50)
+                                    ->get()
+                                    ->mapWithKeys(fn($p) => [$p->id => trim($p->prenom . ' ' . $p->nom)])
                             )
                             ->required()
                             ->searchable()
@@ -123,7 +124,10 @@ class BilanResource extends Resource
                     ->schema([
                         CheckboxList::make('maladies')
                             ->relationship('maladies', 'nom')
-                            ->options(fn () => Cache::remember('form_maladies_actives', 300, fn () =>
+                            ->options(fn() => Cache::remember(
+                                'form_maladies_actives',
+                                300,
+                                fn() =>
                                 Maladie::query()->where('actif', true)->orderBy('nom')->pluck('nom', 'id')
                             ))
                             ->columns(3)
@@ -134,7 +138,10 @@ class BilanResource extends Resource
                 Section::make('Résultats des analyses')->schema([
                     CheckboxList::make('categorie')
                         ->label(__('Catégories'))
-                        ->options(fn () => Cache::remember('form_categories_all', 3600, fn () =>
+                        ->options(fn() => Cache::remember(
+                            'form_categories_all',
+                            3600,
+                            fn() =>
                             Category::query()->orderBy('name')->pluck('name', 'id')
                         ))
                         ->columns(4)
@@ -177,20 +184,48 @@ class BilanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->with(['patient', 'prescripteur']))
+            ->modifyQueryUsing(fn($query) => $query->with(['patient', 'prescripteur']))
             ->columns([
                 Tables\Columns\TextColumn::make('ref')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('patient.nom')
                     ->label('Patient')
-                    ->formatStateUsing(fn ($state, $record) => trim($record->patient?->prenom . ' ' . $record->patient?->nom))
-                    ->searchable(query: fn (Builder $query, string $search) =>
-                        $query->whereHas('patient', fn ($q) =>
+                    ->formatStateUsing(fn($state, $record) => trim($record->patient?->prenom . ' ' . $record->patient?->nom))
+                    ->searchable(
+                        query: fn(Builder $query, string $search) =>
+                        $query->whereHas(
+                            'patient',
+                            fn($q) =>
                             $q->where('nom', 'like', "%{$search}%")
-                              ->orWhere('prenom', 'like', "%{$search}%")
+                                ->orWhere('prenom', 'like', "%{$search}%")
                         )
                     )
+                    ->sortable(),
+                // Dans la méthode table(), ajoute ces colonnes :
+                Tables\Columns\TextColumn::make('prix_total')
+                    ->label('Total')
+                    ->suffix(' FC')
+                    ->sortable()
+                    ->formatStateUsing(fn($state) => number_format($state ?? 0, 0, ',', ' ')),
+
+                Tables\Columns\TextColumn::make('statut')
+                    ->label('Statut')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'en_attente_prelevement' => 'warning',
+                        'preleve'                => 'info',
+                        'en_cours_analyse'       => 'primary',
+                        'termine'                => 'success',
+                        default                  => 'gray',
+                    })
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'en_attente_prelevement' => 'En attente prélèv.',
+                        'preleve'                => 'Prélevé',
+                        'en_cours_analyse'       => 'En cours analyse',
+                        'termine'                => 'Terminé',
+                        default                  => $state,
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Créé le')
@@ -211,6 +246,12 @@ class BilanResource extends Resource
                 Tables\Actions\EditAction::make(),
 
                 ActionGroup::make([
+                    Tables\Actions\Action::make('ticket')
+                        ->label('Ticket')
+                        ->icon('heroicon-o-ticket')
+                        ->color('info')
+                        ->url(fn($record) => route('ticket.show', $record))
+                        ->openUrlInNewTab(),
                     Action::make('bilan_general')
                         ->label('Bilan général')
                         ->icon('heroicon-o-document-text')

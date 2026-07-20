@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\BilanResource\Pages;
 
 use App\Filament\Resources\BilanResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateBilan extends CreateRecord
@@ -12,6 +11,7 @@ class CreateBilan extends CreateRecord
 
     protected function getRedirectUrl(): string
     {
-        return $this->getResource()::getUrl('index');
+        // Redirige vers la route du ticket après création
+        return route('ticket.show', $this->record);
     }
 }
