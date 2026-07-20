@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BacteriologiePdfController;
+use App\Http\Controllers\CaissePdfController;
 use App\Http\Controllers\RapportPdfController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BilanPdfController;
@@ -23,4 +24,5 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/rapport/pdf',  [RapportPdfController::class, 'pdf'])->name('rapport.pdf');
     Route::get('/rapport/csv',  [RapportPdfController::class, 'csv'])->name('rapport.csv');
+    Route::get('/caisse/pdf',   [CaissePdfController::class, 'pdf'])->name('pdf.caisse');
 });

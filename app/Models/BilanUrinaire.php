@@ -9,6 +9,7 @@ class BilanUrinaire extends Model
     protected $fillable = [
         'patient_id',
         'prescripteur_id',
+        'prix',
         'urobilinogene',
         'albumine',
         'sucre',

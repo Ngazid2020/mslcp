@@ -96,6 +96,12 @@ class BilanUrinaireResource extends Resource
                             ])
                             ->preload()
                             ->searchable(),
+                        TextInput::make('prix')
+                            ->label('Tarif (FC)')
+                            ->numeric()
+                            ->minValue(0)
+                            ->suffix('FC')
+                            ->placeholder('Laisser vide si non tarifé'),
                     ])
                     ->columns(3),
                 Section::make('Biochimie urinaire')->schema([
@@ -211,6 +217,11 @@ class BilanUrinaireResource extends Resource
                 Tables\Columns\TextColumn::make('prescripteur.nom')
                     ->label('Prescripteur')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('prix')
+                    ->label('Tarif')
+                    ->suffix(' FC')
+                    ->sortable()
+                    ->placeholder('—'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
