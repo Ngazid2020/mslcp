@@ -3,7 +3,6 @@
 namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class CaisseDuJour extends Page
@@ -15,7 +14,11 @@ class CaisseDuJour extends Page
     protected static string  $view            = 'filament.pages.caisse-du-jour';
 
     public string $selectedDate;
-    public string $typeFilter = 'tous';
+    public string $typeFilter      = 'tous';
+    public string $mode            = 'jour';   // jour | mois | annee
+    public string $selectedMois;
+    public string $selectedAnnee;
+    public string $prescripteurId  = '';
 
     public static function canAccess(): bool
     {
@@ -24,19 +27,13 @@ class CaisseDuJour extends Page
 
     public function mount(): void
     {
-        $this->selectedDate = now()->toDateString();
+        $this->selectedDate  = now()->toDateString();
+        $this->selectedMois  = now()->format('m');
+        $this->selectedAnnee = now()->format('Y');
     }
 
-    /**
-     * Retourne toutes les lignes du jour (bilans + urinaires), fusionnées et triées par heure.
-     *
-     * @return array{lignes: Collection, grand_total: int, nb_total: int, nb_factures: int}
-     */
     public function getCaisseData(): array
     {
-        $date = $this->selectedDate;
-
-        // ── Bilans généraux / hormonaux ───────────────────────────────────────
         $bilansQuery = DB::table('bilans')
             ->leftJoin('patients',      'patients.id',      '=', 'bilans.patient_id')
             ->leftJoin('prescripteurs', 'prescripteurs.id', '=', 'bilans.prescripteur_id')
@@ -58,8 +55,9 @@ class CaisseDuJour extends Page
                     INNER JOIN elements e ON e.id = a.element_id
                     WHERE a.bilan_id = bilans.id AND e.prix IS NOT NULL
                 ) AS total_ligne
-            ")
-            ->whereDate('bilans.created_at', $date);
+            ");
+
+        $this->applyDateFilter($bilansQuery, 'bilans');
 
         if ($this->typeFilter === 'hormonal') {
             $bilansQuery->where('bilans.type', 'hormonal');
@@ -67,7 +65,10 @@ class CaisseDuJour extends Page
             $bilansQuery->whereNull('bilans.type');
         }
 
-        // ── Bilans urinaires ──────────────────────────────────────────────────
+        if ($this->prescripteurId !== '') {
+            $bilansQuery->where('bilans.prescripteur_id', (int) $this->prescripteurId);
+        }
+
         $urinairesQuery = DB::table('bilan_urinaires')
             ->leftJoin('patients',      'patients.id',      '=', 'bilan_urinaires.patient_id')
             ->leftJoin('prescripteurs', 'prescripteurs.id', '=', 'bilan_urinaires.prescripteur_id')
@@ -81,10 +82,14 @@ class CaisseDuJour extends Page
                 prescripteurs.nom AS prescripteur_nom,
                 0 AS nb_analyses_tarif,
                 COALESCE(bilan_urinaires.prix, 0) AS total_ligne
-            ")
-            ->whereDate('bilan_urinaires.created_at', $date);
+            ");
 
-        // ── Fusion selon le filtre ────────────────────────────────────────────
+        $this->applyDateFilter($urinairesQuery, 'bilan_urinaires');
+
+        if ($this->prescripteurId !== '') {
+            $urinairesQuery->where('bilan_urinaires.prescripteur_id', (int) $this->prescripteurId);
+        }
+
         $lignes = match ($this->typeFilter) {
             'general', 'hormonal' => $bilansQuery->get(),
             'urinaire'            => $urinairesQuery->get(),
@@ -101,7 +106,36 @@ class CaisseDuJour extends Page
         ];
     }
 
-    /** 60 derniers jours pour le sélecteur. */
+    private function applyDateFilter($query, string $table): void
+    {
+        $col = $table . '.created_at';
+        match ($this->mode) {
+            'mois'  => $query->whereYear($col, $this->selectedAnnee)
+                             ->whereMonth($col, (int) $this->selectedMois),
+            'annee' => $query->whereYear($col, $this->selectedAnnee),
+            default => $query->whereDate($col, $this->selectedDate),
+        };
+    }
+
+    public function getPeriodeLabel(): string
+    {
+        return match ($this->mode) {
+            'mois'  => \Carbon\Carbon::createFromDate((int) $this->selectedAnnee, (int) $this->selectedMois, 1)
+                           ->translatedFormat('F Y'),
+            'annee' => 'Année ' . $this->selectedAnnee,
+            default => \Carbon\Carbon::parse($this->selectedDate)->translatedFormat('l d F Y'),
+        };
+    }
+
+    public function getTotalLabel(): string
+    {
+        return match ($this->mode) {
+            'mois'  => 'Total du mois',
+            'annee' => "Total de l'année",
+            default => 'Total du jour',
+        };
+    }
+
     public function getDateOptions(): array
     {
         $options = [];
@@ -117,12 +151,42 @@ class CaisseDuJour extends Page
         return $options;
     }
 
-    /** URL vers le PDF de la journée sélectionnée. */
+    public function getMoisOptions(): array
+    {
+        $options = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $key = str_pad((string) $m, 2, '0', STR_PAD_LEFT);
+            $options[$key] = \Carbon\Carbon::createFromDate(2000, $m, 1)->translatedFormat('F');
+        }
+        return $options;
+    }
+
+    public function getAnneeOptions(): array
+    {
+        $options = [];
+        for ($y = (int) now()->format('Y'); $y >= 2024; $y--) {
+            $options[(string) $y] = (string) $y;
+        }
+        return $options;
+    }
+
+    public function getPrescripteurOptions(): array
+    {
+        return DB::table('prescripteurs')
+            ->orderBy('nom')
+            ->pluck('nom', 'id')
+            ->toArray();
+    }
+
     public function getPdfUrl(): string
     {
         return route('pdf.caisse', [
-            'date'        => $this->selectedDate,
-            'type_filter' => $this->typeFilter,
+            'mode'            => $this->mode,
+            'date'            => $this->selectedDate,
+            'mois'            => $this->selectedMois,
+            'annee'           => $this->selectedAnnee,
+            'type_filter'     => $this->typeFilter,
+            'prescripteur_id' => $this->prescripteurId,
         ]);
     }
 }

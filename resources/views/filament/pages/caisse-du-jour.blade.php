@@ -4,9 +4,25 @@
     <x-filament::section>
         <x-slot name="heading">Filtres</x-slot>
 
-        <div class="flex flex-wrap gap-6 items-end">
+        {{-- Onglets de mode (Jour / Mois / Année) --}}
+        <div class="mb-5">
+            <div class="flex gap-1 p-1 bg-gray-100 dark:bg-white/5 rounded-xl w-fit">
+                @foreach(['jour' => 'Jour', 'mois' => 'Mois', 'annee' => 'Année'] as $val => $label)
+                    <button wire:click="$set('mode', '{{ $val }}')"
+                            class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all
+                                {{ $mode === $val
+                                    ? 'bg-white dark:bg-white/15 text-gray-900 dark:text-white shadow'
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200' }}">
+                        {{ $label }}
+                    </button>
+                @endforeach
+            </div>
+        </div>
 
-            {{-- Sélecteur de date --}}
+        <div class="flex flex-wrap gap-5 items-end">
+
+            {{-- Sélecteur de date (mode Jour) --}}
+            @if($mode === 'jour')
             <div class="flex flex-col gap-2 min-w-[280px]">
                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
                 <div class="relative">
@@ -14,6 +30,60 @@
                             class="w-full appearance-none rounded-lg border border-gray-300 dark:border-white/20 bg-white dark:bg-white/5 text-gray-900 dark:text-white pl-4 pr-10 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                         @foreach($this->getDateOptions() as $value => $label)
                             <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            {{-- Sélecteur mois + année (mode Mois) --}}
+            @if($mode === 'mois')
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Mois</label>
+                <div class="relative">
+                    <select wire:model.live="selectedMois"
+                            class="appearance-none rounded-lg border border-gray-300 dark:border-white/20 bg-white dark:bg-white/5 text-gray-900 dark:text-white pl-4 pr-10 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        @foreach($this->getMoisOptions() as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            {{-- Sélecteur année (modes Mois et Année) --}}
+            @if($mode === 'mois' || $mode === 'annee')
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Année</label>
+                <div class="relative">
+                    <select wire:model.live="selectedAnnee"
+                            class="appearance-none rounded-lg border border-gray-300 dark:border-white/20 bg-white dark:bg-white/5 text-gray-900 dark:text-white pl-4 pr-10 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        @foreach($this->getAnneeOptions() as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            {{-- Filtre prescripteur --}}
+            <div class="flex flex-col gap-2 min-w-[200px]">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Prescripteur</label>
+                <div class="relative">
+                    <select wire:model.live="prescripteurId"
+                            class="w-full appearance-none rounded-lg border border-gray-300 dark:border-white/20 bg-white dark:bg-white/5 text-gray-900 dark:text-white pl-4 pr-10 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="">Tous les prescripteurs</option>
+                        @foreach($this->getPrescripteurOptions() as $id => $nom)
+                            <option value="{{ $id }}">{{ $nom }}</option>
                         @endforeach
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
@@ -58,18 +128,21 @@
         $grandTotal = $data['grand_total'];
         $nbTotal    = $data['nb_total'];
         $nbFactures = $data['nb_factures'];
+        $periodeLabel = $this->getPeriodeLabel();
+        $totalLabel   = $this->getTotalLabel();
+        $showDate     = $mode !== 'jour';
     @endphp
 
     <x-filament::section>
         <x-slot name="heading">
-            {{ \Carbon\Carbon::parse($selectedDate)->translatedFormat('l d F Y') }}
+            {{ $periodeLabel }}
             &mdash; {{ $nbTotal }} bilan(s) &mdash; {{ $nbFactures }} facturé(s)
         </x-slot>
 
         @if($lignes->isEmpty())
             <div class="py-12 text-center text-gray-400 dark:text-gray-500">
                 <x-heroicon-o-document-magnifying-glass class="mx-auto h-10 w-10 mb-3 opacity-50"/>
-                Aucun bilan enregistré ce jour.
+                Aucun bilan enregistré pour cette période.
             </div>
         @else
             <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/10">
@@ -80,7 +153,7 @@
                             <th class="px-4 py-3">Patient</th>
                             <th class="px-4 py-3">Type</th>
                             <th class="px-4 py-3">Prescripteur</th>
-                            <th class="px-4 py-3 text-center">Heure</th>
+                            <th class="px-4 py-3 text-center">{{ $showDate ? 'Date & Heure' : 'Heure' }}</th>
                             <th class="px-4 py-3 text-center">Éléments tarifés</th>
                             <th class="px-4 py-3 text-right">Montant</th>
                         </tr>
@@ -110,7 +183,11 @@
                                     {{ $ligne->prescripteur_nom ?: '—' }}
                                 </td>
                                 <td class="px-4 py-3 text-center text-gray-500 dark:text-gray-400 tabular-nums">
-                                    {{ \Carbon\Carbon::parse($ligne->created_at)->format('H:i') }}
+                                    @if($showDate)
+                                        {{ \Carbon\Carbon::parse($ligne->created_at)->format('d/m H:i') }}
+                                    @else
+                                        {{ \Carbon\Carbon::parse($ligne->created_at)->format('H:i') }}
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3 text-center text-gray-500 dark:text-gray-400">
                                     @if($ligne->source === 'urinaire')
@@ -132,7 +209,7 @@
                     <tfoot>
                         <tr class="border-t-2 border-gray-300 dark:border-white/20 bg-gray-50 dark:bg-white/5">
                             <td colspan="5" class="px-4 py-3 font-semibold text-gray-700 dark:text-gray-200 text-sm uppercase tracking-wide">
-                                Total du jour
+                                {{ $totalLabel }}
                             </td>
                             <td class="px-4 py-3 text-center font-semibold text-gray-700 dark:text-gray-200">
                                 {{ $lignes->sum('nb_analyses_tarif') }}

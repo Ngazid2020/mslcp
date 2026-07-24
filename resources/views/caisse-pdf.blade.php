@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Caisse du {{ $dateParsed->format('d/m/Y') }}</title>
+    <title>Caisse — {{ $periodeLabel }}</title>
     <style>
         @page { margin: 12mm 10mm 14mm 10mm; }
         * { box-sizing: border-box; }
@@ -29,7 +29,7 @@
         /* ── BANDE TITRE ── */
         .doc-title-bar { background-color: #1B3A6B; color: #fff; text-align: center; padding: 5px 0; font-size: 9.5px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
 
-        /* ── BLOC DATE ── */
+        /* ── BLOC MÉTA ── */
         .meta-bar { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         .meta-bar td { padding: 4px 8px; font-size: 8.5px; border: 1px solid #e0e6f0; }
         .meta-label { background: #edf1fb; color: #1B3A6B; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; width: 25%; }
@@ -92,8 +92,8 @@
 {{-- MÉTA --}}
 <table class="meta-bar">
     <tr>
-        <td class="meta-label">Date</td>
-        <td>{{ $dateParsed->translatedFormat('l d F Y') }}</td>
+        <td class="meta-label">Période</td>
+        <td>{{ $periodeLabel }}</td>
         <td class="meta-label">Type</td>
         <td>
             @php
@@ -112,16 +112,17 @@
 </table>
 
 {{-- TABLEAU --}}
+@php $showDate = $mode !== 'jour'; @endphp
 <table class="rt">
     <thead>
         <tr>
             <th style="width:12%">Référence</th>
-            <th style="width:26%">Patient</th>
+            <th style="width:24%">Patient</th>
             <th style="width:10%">Type</th>
             <th style="width:20%">Prescripteur</th>
-            <th class="center" style="width:8%">Heure</th>
+            <th class="center" style="width:{{ $showDate ? '10%' : '8%' }}">{{ $showDate ? 'Date & Heure' : 'Heure' }}</th>
             <th class="center" style="width:8%">Éléments</th>
-            <th class="right" style="width:16%">Montant (FC)</th>
+            <th class="right" style="width:{{ $showDate ? '16%' : '18%' }}">Montant (FC)</th>
         </tr>
     </thead>
     <tbody>
@@ -140,7 +141,13 @@
                 <span class="badge {{ $badgeClass }}">{{ $badgeLabel }}</span>
             </td>
             <td>{{ $ligne->prescripteur_nom ?: '—' }}</td>
-            <td class="center">{{ \Carbon\Carbon::parse($ligne->created_at)->format('H:i') }}</td>
+            <td class="center">
+                @if($showDate)
+                    {{ \Carbon\Carbon::parse($ligne->created_at)->format('d/m H:i') }}
+                @else
+                    {{ \Carbon\Carbon::parse($ligne->created_at)->format('H:i') }}
+                @endif
+            </td>
             <td class="center">
                 @if($ligne->source === 'urinaire')
                     <span class="v-gray" style="font-size:7px;font-style:italic;">forfait</span>
@@ -155,7 +162,7 @@
         @endforeach
     </tbody>
     <tr class="total-row">
-        <td colspan="5">TOTAL DU JOUR</td>
+        <td colspan="5">{{ strtoupper($totalLabel) }}</td>
         <td class="center">{{ $lignes->sum('nb_analyses_tarif') }}</td>
         <td class="right total-amount">{{ number_format($grandTotal, 0, ',', ' ') }} FC</td>
     </tr>
