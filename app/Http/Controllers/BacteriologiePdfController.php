@@ -12,9 +12,11 @@ class BacteriologiePdfController extends Controller
 {
     public function generatePdf(int $recordId): StreamedResponse
     {
-        $record = BilanUrinaire::with(['patient', 'prescripteur'])->findOrFail($recordId);
+        $record = BilanUrinaire::findOrFail($recordId);
 
-        Gate::authorize('download Bilan');
+        Gate::authorize('download', $record);
+
+        $record->load(['patient', 'prescripteur']);
 
         abort_unless($record->patient, 422, 'Ce bilan urinaire ne possède pas de patient associé.');
 

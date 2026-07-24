@@ -17,12 +17,13 @@ class CaissePdfController extends Controller
         $date       = $request->query('date', now()->toDateString());
         $typeFilter = $request->query('type_filter', 'tous');
 
-        // Valider la date
+        // Valider et normaliser la date
         try {
             $dateParsed = \Carbon\Carbon::createFromFormat('Y-m-d', $date);
         } catch (\Exception) {
             $dateParsed = now();
         }
+        $date = $dateParsed->toDateString(); // utiliser la valeur normalisée dans toutes les requêtes
 
         $bilansQuery = DB::table('bilans')
             ->leftJoin('patients',      'patients.id',      '=', 'bilans.patient_id')

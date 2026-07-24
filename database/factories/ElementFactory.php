@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,15 +10,30 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ElementFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            'nom' => $this->faker->lastName(),
+            'nom'         => $this->faker->unique()->word(),
+            'category_id' => Category::factory(),
+            'unite'       => $this->faker->randomElement(['g/dL', 'mmol/L', 'UI/L', '%', null]),
+            'type_valeur' => $this->faker->randomElement(['numerique', 'qualitatif', 'positif/negatif']),
+            'prix'        => null,
         ];
+    }
+
+    public function avecTarif(int $prix = 2000): static
+    {
+        return $this->state(['prix' => $prix]);
+    }
+
+    public function numerique(): static
+    {
+        return $this->state([
+            'type_valeur' => 'numerique',
+            'ref_inf_h'   => '4.5',
+            'ref_sup_h'   => '5.5',
+            'ref_inf_f'   => '4.0',
+            'ref_sup_f'   => '5.0',
+        ]);
     }
 }

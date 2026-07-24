@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Patient;
+use App\Models\Prescripteur;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,15 +11,29 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class BilanFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'patient_id'      => Patient::factory(),
+            'prescripteur_id' => Prescripteur::factory(),
+            'statut'          => $this->faker->randomElement([
+                'en_attente_prelevement',
+                'preleve',
+                'en_cours_analyse',
+                'termine',
+            ]),
+            'type'       => null,
+            'prix_total' => 0,
         ];
+    }
+
+    public function hormonal(): static
+    {
+        return $this->state(['type' => 'hormonal']);
+    }
+
+    public function termine(): static
+    {
+        return $this->state(['statut' => 'termine']);
     }
 }

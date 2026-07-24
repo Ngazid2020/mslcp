@@ -18,11 +18,12 @@ class Bilan extends Model
         'prescripteur_id',
         'statut',
         'prix_total',
+        'prix_revient',
     ];
 
     protected $casts = [
-        'statut' => 'string',
-        'prix_total' => 'integer',
+        'prix_total'   => 'integer',
+        'prix_revient' => 'float',
     ];
 
     // ─── Relations ───────────────────────────────────────────────────────────

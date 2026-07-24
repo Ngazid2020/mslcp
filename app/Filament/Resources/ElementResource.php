@@ -190,16 +190,4 @@ class ElementResource extends Resource
         ];
     }
 
-    // Prépare les données pour l'édition (pré-remplit le Repeater)
-    public static function mutateFormDataBeforeFill(array $data, $record): array
-    {
-        $data['reactifs_associes'] = $record->reactifs->map(function ($reactif) {
-            return [
-                'reactif_id' => $reactif->id,
-                'quantite_consommee' => $reactif->pivot->quantite_consommee ?? 1,
-            ];
-        })->toArray();
-
-        return $data;
-    }
 }

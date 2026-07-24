@@ -8,7 +8,12 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
+use App\Models\BilanUrinaire;
+use App\Policies\BilanUrinairePolicy;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use App\Policies\RolePolicy;
@@ -34,6 +39,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Permission::class, PermissionPolicy::class);
+        Gate::policy(BilanUrinaire::class, BilanUrinairePolicy::class);
+
+        RateLimiter::for('login', fn(Request $request) =>
+            Limit::perMinute(5)->by($request->input('email', $request->ip()))
+        );
 
         FilamentAsset::register([
             Js::make('mslcp-app', Vite::asset('resources/js/app.js')),

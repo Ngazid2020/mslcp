@@ -276,7 +276,7 @@ class BilanResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Créé le')
-                    ->dateTime('d/m/Y H:m:s')
+                    ->dateTime('d/m/Y H:i:s')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),

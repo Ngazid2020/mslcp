@@ -10,7 +10,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use App\Services\StockService;
 
 class ReactifResource extends Resource
 {
@@ -18,6 +17,11 @@ class ReactifResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-beaker';
     protected static ?string $navigationGroup = 'Gestion des réactifs';
     protected static ?int $navigationGroupSort = 4;
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->hasRole(['administrateur', 'laborantin']) ?? false;
+    }
 
     public static function form(Form $form): Form
     {

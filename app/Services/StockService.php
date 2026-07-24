@@ -21,6 +21,9 @@ class StockService
             return ['disponible' => true, 'messages' => []];
         }
 
+        // Eager-load les réactifs pour éviter les N+1
+        $elements->load('reactifs');
+
         // Calcul de la consommation totale par réactif
         $consommationParReactif = [];
         foreach ($elements as $element) {
@@ -66,6 +69,9 @@ class StockService
             return 0;
         }
 
+        // Eager-load les réactifs pour éviter les N+1
+        $elements->load('reactifs');
+
         // Regrouper par réactif
         $consommationParReactif = [];
         foreach ($elements as $element) {
@@ -81,12 +87,13 @@ class StockService
 
         DB::transaction(function () use ($consommationParReactif, $bilan, $userId, &$coutTotal) {
             foreach ($consommationParReactif as $reactifId => $quantiteTotal) {
-                // Récupérer les lots FEFO
+                // Récupérer les lots FEFO avec verrou pour éviter la race condition
                 $lots = LotReactif::where('reactif_id', $reactifId)
                     ->where('est_consommable', true)
                     ->where('quantite_restante', '>', 0)
                     ->where('date_peremption', '>=', now()->toDateString())
                     ->orderBy('date_peremption')
+                    ->lockForUpdate()
                     ->get();
 
                 $quantiteRestante = $quantiteTotal;

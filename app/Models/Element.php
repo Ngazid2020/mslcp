@@ -30,7 +30,17 @@ class Element extends Model
     ];
 
     protected $casts = [
-        'prix' => 'integer',
+        'prix'         => 'integer',
+        'ref_inf_h'    => 'float',
+        'ref_sup_h'    => 'float',
+        'ref_inf_f'    => 'float',
+        'ref_sup_f'    => 'float',
+        'ref_inf_enf'  => 'float',
+        'ref_sup_enf'  => 'float',
+        'ref_inf_nour' => 'float',
+        'ref_sup_nour' => 'float',
+        'ref_inf_nne'  => 'float',
+        'ref_sup_nne'  => 'float',
     ];
 
     public function category()
@@ -96,7 +106,7 @@ class Element extends Model
         $normalized = strtolower(trim((string) $value));
 
         // Valeurs considérées comme « normales » (négatif / absent)
-        $negativeValues = ['négatif', 'negatif', 'negatif', '-', 'non détecté', 'non detecte', 'absent', 'aucun'];
+        $negativeValues = ['négatif', 'negatif', '-', 'non détecté', 'non detecte', 'absent', 'aucun'];
 
         if ($this->type_valeur === 'qualitatif') {
             return ! in_array($normalized, $negativeValues);

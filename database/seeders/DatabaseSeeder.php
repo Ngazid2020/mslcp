@@ -278,11 +278,13 @@ class DatabaseSeeder extends Seeder
             'force-delete-any Patient',
         ]);
 
-        // ── Prescripteurs de démo ────────────────────────────────────────────
-        Prescripteur::factory(10)->create();
-
-        // ── Patients de démo ─────────────────────────────────────────────────
-        $patients = Patient::factory(50)->create();
+        // ── Données de démo — jamais en production ───────────────────────────
+        if (app()->environment('local', 'testing', 'staging')) {
+            Prescripteur::factory(10)->create();
+            $patients = Patient::factory(50)->create();
+        } else {
+            $patients = collect();
+        }
 
         // ── Catégories et éléments d'analyse ────────────────────────────────
         $elementsByCategory = [
