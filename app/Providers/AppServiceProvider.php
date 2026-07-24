@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Bilan;
+use App\Observers\BilanObserver;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
@@ -39,7 +41,9 @@ class AppServiceProvider extends ServiceProvider
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
-            fn () => view('filament.topbar-quicklinks'),
+            fn() => view('filament.topbar-quicklinks'),
         );
+
+        Bilan::observe(BilanObserver::class);
     }
 }

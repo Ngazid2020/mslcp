@@ -46,6 +46,18 @@ class Element extends Model
             ->withTimestamps();
     }
 
+    public function reactifs()
+    {
+        return $this->belongsToMany(Reactif::class, 'element_reactif')
+            ->withPivot('quantite_consommee')
+            ->withTimestamps();
+    }
+
+    public function elementReactifs(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ElementReactif::class);
+    }
+
     /**
      * Retourne [min, max] de référence pour un patient donné.
      * Priorité : âge < 1 an → nourrisson-NNé, < 5 → nourrisson, < 16 → enfant, sinon adulte H/F.
