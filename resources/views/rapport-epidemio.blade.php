@@ -131,7 +131,9 @@
 <table class="header-table">
     <tr>
         <td class="h-logo">
+            @if(file_exists(public_path('img/logo.png')))
             <img src="{{ public_path('img/logo.png') }}" alt="MSLCP">
+            @endif
         </td>
         <td class="h-info">
             <div class="h-name">{{ $contact['nom'] ?? 'MSLCP' }}</div>

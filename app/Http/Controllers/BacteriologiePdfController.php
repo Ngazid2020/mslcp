@@ -38,7 +38,7 @@ class BacteriologiePdfController extends Controller
 
             return response()->streamDownload(function () use ($output) {
                 echo $output;
-            }, 'bilan_urinaire_' . $record->id . '.pdf');
+            }, 'ecbu-' . $record->id . '.pdf', ['Content-Type' => 'application/pdf']);
         } catch (\Exception $e) {
             report($e);
             abort(500, 'Une erreur est survenue lors de la génération du PDF. Vérifiez que le bilan est complet.');

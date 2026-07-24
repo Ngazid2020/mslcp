@@ -16,7 +16,7 @@ return new class extends Migration
             $table->decimal('quantite_restante', 10, 2);
             $table->decimal('prix_achat', 10, 2)->nullable(); // prix unitaire
             $table->date('date_achat')->nullable();
-            $table->date('date_peremption')->required(); // obligatoire
+            $table->date('date_peremption'); // NOT NULL par défaut
             $table->string('fournisseur_lot')->nullable();
             $table->boolean('est_consommable')->default(true);
             $table->timestamps();

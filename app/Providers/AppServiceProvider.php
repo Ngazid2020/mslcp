@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Bilan;
+use App\Models\BilanHormonal;
 use App\Observers\BilanObserver;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
@@ -55,5 +56,6 @@ class AppServiceProvider extends ServiceProvider
         );
 
         Bilan::observe(BilanObserver::class);
+        BilanHormonal::observe(BilanObserver::class);
     }
 }

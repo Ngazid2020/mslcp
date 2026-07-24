@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
 class Bacteriologie extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'ref',
         'type',
@@ -35,11 +38,11 @@ class Bacteriologie extends Model
             ->withTimestamps();
     }
 
-    public static function boot()
+    protected static function boot()
     {
         parent::boot();
 
-        static::creating(function ($bilan) {
+        static::creating(function ($bacteriologie) {
             $year  = date('Y');
             $month = date('m');
 
@@ -51,7 +54,7 @@ class Bacteriologie extends Model
                     ->count() + 1;
             });
 
-            $bilan->ref = 'URI-' . $year . '-' . $month . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
+            $bacteriologie->ref = 'URI-' . $year . '-' . $month . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
         });
     }
 }

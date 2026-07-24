@@ -80,12 +80,10 @@ class BilanResource extends Resource
                             ->afterStateHydrated(function ($state, callable $set) {
                                 $patient = $state ? Patient::find($state) : null;
                                 $set('patient_sexe', $patient?->sexe ?? '');
-                                $set('patient_prenom', $patient?->prenom ?? '');
                             })
                             ->afterStateUpdated(function ($state, Set $set) {
                                 $patient = Patient::find($state);
-                                $set('patient_sexe', $patient->sexe ?? '');
-                                $set('patient_prenom', $patient->prenom ?? '');
+                                $set('patient_sexe', $patient?->sexe ?? '');
                             })
                             ->live()
                             ->label('Patient'),

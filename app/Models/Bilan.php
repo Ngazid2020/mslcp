@@ -5,11 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Bilan extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->useLogName('bilans');
+    }
 
     protected $fillable = [
         'ref',
@@ -77,7 +89,7 @@ class Bilan extends Model
 
     // ─── Boot ─────────────────────────────────────────────────────────────────
 
-    public static function boot()
+    protected static function boot()
     {
         parent::boot();
 

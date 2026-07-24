@@ -37,8 +37,11 @@ class StockService
         $messages = [];
         $disponible = true;
 
+        $reactifs = \App\Models\Reactif::whereIn('id', array_keys($consommationParReactif))
+            ->get()->keyBy('id');
+
         foreach ($consommationParReactif as $reactifId => $quantiteNecessaire) {
-            $reactif = \App\Models\Reactif::find($reactifId);
+            $reactif = $reactifs[$reactifId] ?? null;
             if (!$reactif) continue;
 
             $stockDisponible = $reactif->stock_disponible;

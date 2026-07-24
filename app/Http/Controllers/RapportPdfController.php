@@ -8,6 +8,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class RapportPdfController extends Controller
@@ -25,7 +26,7 @@ class RapportPdfController extends Controller
             ->setPaper('a4', 'portrait')
             ->output();
 
-        $filename = 'rapport-epidemio-' . $annee . ($maladie ? '-' . \Str::slug($maladie->nom) : '') . '.pdf';
+        $filename = 'rapport-epidemio-' . $annee . ($maladie ? '-' . Str::slug($maladie->nom) : '') . '.pdf';
 
         return response()->streamDownload(
             fn () => print($output),

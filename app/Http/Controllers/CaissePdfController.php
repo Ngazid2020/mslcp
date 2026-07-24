@@ -21,9 +21,12 @@ class CaissePdfController extends Controller
         try {
             $dateParsed = \Carbon\Carbon::createFromFormat('Y-m-d', $date);
         } catch (\Exception) {
+            $dateParsed = null;
+        }
+        if (!$dateParsed) {
             $dateParsed = now();
         }
-        $date = $dateParsed->toDateString(); // utiliser la valeur normalisée dans toutes les requêtes
+        $date = $dateParsed->toDateString();
 
         $bilansQuery = DB::table('bilans')
             ->leftJoin('patients',      'patients.id',      '=', 'bilans.patient_id')

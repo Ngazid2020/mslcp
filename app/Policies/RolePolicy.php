@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use Illuminate\Auth\Access\Response;
 use Spatie\Permission\Models\Role;
 use App\Models\User;
 

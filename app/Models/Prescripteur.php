@@ -21,4 +21,14 @@ class Prescripteur extends Model
     {
         return $this->hasMany(Bilan::class);
     }
+
+    public function bilanUrinaires()
+    {
+        return $this->hasMany(BilanUrinaire::class);
+    }
+
+    public function bacteriologies()
+    {
+        return $this->hasMany(Bacteriologie::class);
+    }
 }

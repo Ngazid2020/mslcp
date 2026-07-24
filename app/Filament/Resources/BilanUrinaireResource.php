@@ -240,8 +240,8 @@ class BilanUrinaireResource extends Resource
                     ->icon('heroicon-o-document-arrow-down')
                     ->url(fn($record) => route('pdf.bilanurinaire', $record->id))
                     ->openUrlInNewTab()
-                    ->color(Color::Emerald),
-                    // ->visible(fn($record) => auth()->user()->can('download', $record)),
+                    ->color(Color::Emerald)
+                    ->visible(fn($record) => auth()->user()?->can('download', $record) ?? false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

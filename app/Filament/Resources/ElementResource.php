@@ -137,8 +137,7 @@ class ElementResource extends Resource
                             ])
                             ->columns(2)
                             ->defaultItems(0)
-                            ->createItemButtonLabel('Ajouter un réactif')
-                            ->orderable(false) // Pas besoin de réorganiser
+                            ->addActionLabel('Ajouter un réactif')
                             ->grid(1),
                     ])
                     ->collapsible()

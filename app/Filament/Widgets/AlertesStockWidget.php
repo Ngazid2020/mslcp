@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class AlertesStockWidget extends Widget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
     protected int|string|array $columnSpan = 2;
     protected static string $view = 'filament.widgets.alertes-stock-widget';
 
@@ -47,7 +47,7 @@ class AlertesStockWidget extends Widget
                 ->limit(50)
                 ->get()
                 ->map(fn($lot) => [
-                    'nom'        => $lot->reactif->nom,
+                    'nom'        => $lot->reactif?->nom ?? 'Réactif inconnu',
                     'lot'        => $lot->numero_lot,
                     'peremption' => $lot->date_peremption->format('d/m/Y'),
                 ]);
@@ -59,8 +59,4 @@ class AlertesStockWidget extends Widget
         ];
     }
 
-    protected function getView(): string
-    {
-        return 'filament.widgets.alertes-stock-widget';
-    }
 }

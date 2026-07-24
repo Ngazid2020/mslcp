@@ -156,7 +156,9 @@
 <table class="header-table">
     <tr>
         <td class="h-logo">
+            @if(file_exists(public_path('img/logo.png')))
             <img src="{{ public_path('img/logo.png') }}" alt="Logo MSLCP">
+            @endif
         </td>
         <td class="h-info">
             <div class="h-name">Maison de Surveillance et de Lutte contre le Paludisme (MSLCP)</div>
@@ -327,7 +329,9 @@
         </td>
         <td style="width:45%; text-align:right;">
             <div class="sig-label">Responsable du Laboratoire</div>
+            @if(file_exists(public_path('img/signature.png')))
             <img src="{{ public_path('img/signature.png') }}" alt="Signature" style="width:100px; height:auto; display:block; margin-left:auto; margin-top:4px;">
+            @endif
             <div class="sig-name">Mme Rahamatou SILAI</div>
             <div class="sig-title">Parasitologue / MSc Biochimie</div>
         </td>

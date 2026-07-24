@@ -9,7 +9,7 @@ use App\Http\Controllers\TicketController;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 Route::get('/', function () {
-    $qrCode = QrCode::size(200)->generate('https://example.com');
+    $qrCode = QrCode::size(200)->generate(config('app.url'));
     return view('welcome', ['qrCode' => $qrCode]);
 });
 

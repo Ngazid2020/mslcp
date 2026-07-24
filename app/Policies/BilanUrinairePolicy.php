@@ -39,6 +39,6 @@ class BilanUrinairePolicy
 
     public function download(User $user, BilanUrinaire $bilan): bool
     {
-        return $user->checkPermissionTo('download Bilan');
+        return $user->checkPermissionTo('download BilanUrinaire');
     }
 }
