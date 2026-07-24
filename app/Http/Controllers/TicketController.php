@@ -4,26 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Models\Bilan;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Gate;
 
 class TicketController extends Controller
 {
     public function show(Bilan $bilan)
     {
-        // Charger les relations nécessaires
+        Gate::authorize('view', $bilan);
+
         $bilan->load(['patient', 'prescripteur', 'elements.category']);
 
-        // Compter le nombre d'éléments pour l'affichage
         $nbElements = $bilan->elements->count();
 
-        // Calcul du total (si pas déjà enregistré)
-        if (!$bilan->prix_total) {
-            $bilan->prix_total = $bilan->elements->sum('prix');
-            $bilan->saveQuietly();
+        if ($bilan->prix_total === null) {
+            $bilan->refreshTotal();
         }
 
         $pdf = Pdf::loadView('pdf.ticket', compact('bilan', 'nbElements'));
 
-        // Aperçu en ligne dans le navigateur, mais on peut aussi forcer le téléchargement
         return $pdf->stream('ticket-' . $bilan->ref . '.pdf');
     }
 }

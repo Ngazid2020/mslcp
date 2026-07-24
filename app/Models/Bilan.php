@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
 
 class Bilan extends Model
 {
@@ -82,20 +83,17 @@ class Bilan extends Model
         static::creating(function ($bilan) {
             $year  = date('Y');
             $month = date('m');
-            $count = Bilan::query()->whereYear('created_at', '=', $year)->count() + 1;
-            $bilan->ref = 'LAB-' . $year . '-' . $month . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
 
-            // Si le prix total n'est pas défini manuellement, on le calcule
-            if ($bilan->prix_total === null) {
-                $bilan->prix_total = 0;
-            }
-        });
+            $count = DB::transaction(function () use ($year, $month) {
+                return Bilan::query()
+                    ->whereYear('created_at', $year)
+                    ->whereMonth('created_at', $month)
+                    ->lockForUpdate()
+                    ->count() + 1;
+            });
 
-        // Met à jour le prix_total automatiquement si on ajoute des éléments
-        static::saving(function ($bilan) {
-            if ($bilan->exists && $bilan->prix_total === null) {
-                $bilan->prix_total = $bilan->elements()->sum('prix');
-            }
+            $bilan->ref       = 'LAB-' . $year . '-' . $month . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
+            $bilan->prix_total = 0;
         });
     }
 

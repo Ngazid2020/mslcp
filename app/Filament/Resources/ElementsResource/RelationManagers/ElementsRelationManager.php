@@ -34,13 +34,13 @@ class ElementsRelationManager extends RelationManager
                     ->disabled(),
                 Hidden::make('type_valeur'),
 
-                // Saisie numérique (ou texte libre) — masquée pour les éléments qualitatifs
+                // Champ unique qui stocke la valeur — toujours déhydraté
                 TextInput::make('resultat')
                     ->label('Résultat')
                     ->hidden(fn(Get $get) => $get('type_valeur') === 'qualitatif'),
 
-                // Saisie qualitative : négatif / + / ++ / +++ / ++++
-                Select::make('resultat')
+                // Saisie qualitative : négatif / + / ++ / +++ / ++++ (ne déhydrate pas directement)
+                Select::make('resultat_qualitatif')
                     ->label('Résultat')
                     ->options([
                         'négatif' => '— Négatif',
@@ -50,6 +50,8 @@ class ElementsRelationManager extends RelationManager
                         '++++'    => '++++ (très forte parasitémie)',
                     ])
                     ->hidden(fn(Get $get) => $get('type_valeur') !== 'qualitatif')
+                    ->dehydrated(false)
+                    ->afterStateUpdated(fn($state, Set $set) => $set('resultat', $state))
                     ->live(),
 
                 // Radio secondaire : Positif/Négatif (s'affiche pour les 3 modes)
@@ -98,10 +100,6 @@ class ElementsRelationManager extends RelationManager
 
 
 
-                // Champ caché qui stocke la valeur finale
-                TextInput::make('resultat')
-                    ->hidden()
-                    ->dehydrated(true),
             ]);
     }
 
@@ -177,11 +175,14 @@ class ElementsRelationManager extends RelationManager
                         TextInput::make('resultat')
                             ->label('Résultat')
                             ->placeholder('Laisser vide pour saisir plus tard'),
-                    ]),
+                    ])
+                    ->after(fn (RelationManager $livewire) => $livewire->getOwnerRecord()->refreshTotal()),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                DetachAction::make()->label('Retirer'),
+                DetachAction::make()
+                    ->label('Retirer')
+                    ->after(fn (RelationManager $livewire) => $livewire->getOwnerRecord()->refreshTotal()),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

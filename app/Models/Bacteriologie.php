@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
 
 class Bacteriologie extends Model
 {
@@ -41,7 +42,15 @@ class Bacteriologie extends Model
         static::creating(function ($bilan) {
             $year  = date('Y');
             $month = date('m');
-            $count = Bacteriologie::whereYear('created_at', $year)->count() + 1;
+
+            $count = DB::transaction(function () use ($year, $month) {
+                return Bacteriologie::query()
+                    ->whereYear('created_at', $year)
+                    ->whereMonth('created_at', $month)
+                    ->lockForUpdate()
+                    ->count() + 1;
+            });
+
             $bilan->ref = 'URI-' . $year . '-' . $month . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
         });
     }
