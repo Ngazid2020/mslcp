@@ -18,11 +18,6 @@ class ReactifResource extends Resource
     protected static ?string $navigationGroup = 'Gestion des réactifs';
     protected static ?int $navigationGroupSort = 4;
 
-    public static function canViewAny(): bool
-    {
-        return auth()->user()?->hasRole(['administrateur', 'laborantin']) ?? false;
-    }
-
     public static function form(Form $form): Form
     {
         return $form

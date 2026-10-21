@@ -20,11 +20,6 @@ class LotReactifResource extends Resource
     protected static ?string $navigationLabel   = 'Lots de réactifs';
     protected static ?int    $navigationGroupSort = 3;
 
-    public static function canViewAny(): bool
-    {
-        return auth()->user()?->hasRole('administrateur') ?? false;
-    }
-
     public static function form(Form $form): Form
     {
         return $form
